@@ -1,0 +1,12 @@
+{
+  "preset": "google",
+  "maximumLineLength": null,
+  "esnext": true,
+  "validateIndentation":null,
+  "requireCamelCaseOrUpperCaseIdentifiers": "ignoreProperties",
+  "jsDoc":{
+  	"checkAnnotations":"jsdoc3"
+  },
+  "disallowMixedSpacesAndTabs":"smart",
+  "requireDotNotation": null //For ['catch'] for ie compadability
+}

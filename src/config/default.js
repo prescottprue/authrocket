@@ -1,21 +1,21 @@
 var env = process.env.NODE_ENV;
 var config;
 switch (env) {
-	case "local":
-		config = require("./env/local");
+	case 'local':
+		config = require('./env/local');
 		break;
-	// case "development":
-	// 	config = require("./env/development");
+	// case 'development':
+	// 	config = require('./env/development');
 	// 	break;
-	// case "staging":
-	// 	config = require("./env/staging");
+	// case 'staging':
+	// 	config = require('./env/staging');
 	// 	break;
-	case "production":
-		config = require("./env/production");
+	case 'production':
+		config = require('./env/production');
 		break;
 	default:
-		config = require("./env/production");
+		config = require('./env/production');
 		break;
 }
 
-exports.config = config;
+export default config;
