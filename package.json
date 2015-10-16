@@ -1,0 +1,14 @@
+{
+  "name": "authrocket",
+  "version": "0.0.1",
+  "description": "NodeJS library for interfacing with AuthRocket service.",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Prescott Prue",
+  "license": "ISC",
+  "dependencies": {
+    "request": "^2.65.0"
+  }
+}
