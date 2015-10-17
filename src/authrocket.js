@@ -1,12 +1,12 @@
 import request from 'request-promise';
-import config from './config/default';
+import config from './config';
 import _ from 'lodash';
 
 export default class AuthRocket {
   constructor(settings) {
     if (settings && _.isString(settings)) {
       this.apiUrl = settings;
-    } else if (settings && _.isObject(settings)) {
+    } else {
       //Set api url if within settings
       this.apiUrl = _.has(settings, 'apiUrl') ? settings.apiUrl : config.urls.api;
       this.apiKey = _.has(settings, 'apiKey') ? settings.apiKey : config.apiKey;
@@ -80,13 +80,13 @@ export default class AuthRocket {
    * @return {Promise}
    */
   requestWithHeaders(endpoint, data) {
-    if (!_.has(this, ['accountId', 'apiKey', 'realm'])) {
-      console.error('Account, apiKey, and realm are required to make a request with headers');
-      return Promise.reject({message: 'Account, apiKey, and realm are required to make a request with headers.'});
-    }
+    // if (!_.has(this, ['accountId', 'apiKey', 'realmId'])) {
+    //   console.error('Account, apiKey, and realm are required to make a request with headers.', JSON.stringify(this));
+    //   return Promise.reject({message: 'Account, apiKey, and realm are required to make a request with headers.'});
+    // }
     let options = {
       method: 'POST', //TODO: Handle other request methods
-      uri: `${this.apiUrl}/${endpoint}`,
+      uri: `${this.apiUrl}${endpoint}`,
       headers: {
         'X-Authrocket-Account': this.accountId,
         'X-Authrocket-Api-Key': this.apiKey,

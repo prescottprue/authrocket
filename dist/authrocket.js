@@ -8,40 +8,71 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 	'use strict';
 
 	request = 'default' in request ? request['default'] : request;
-	_ = 'default' in _ ? _['default'] : _;
+	var ___default = 'default' in _ ? _['default'] : _;
 
-	var env = process.env.NODE_ENV;
-	var config;
-	switch (env) {
-		case 'local':
-			config = require('./env/local');
-			break;
-		// case 'development':
-		// 	config = require('./env/development');
-		// 	break;
-		// case 'staging':
-		// 	config = require('./env/staging');
-		// 	break;
-		case 'production':
-			config = require('./env/production');
-			break;
-		default:
-			config = require('./env/production');
-			break;
-	}
+	var defaultConfig = {
+		envName: 'local',
+		accountId: process.env.AUTHROCKET_ACCOUNT_ID,
+		apiKey: process.env.AUTHROCKET_API_KEY,
+		realmId: process.env.AUTHROCKET_REALM_ID,
+		jwtSecret: process.env.AUTHROCKET_JWT_SECRET,
+		urls: {
+			api: process.env.AUTHROCKET_API_URL || 'https://api-e1.authrocket.com/v1/',
+			login: process.env.AUTHROCKET_LOGIN_URL,
+			signup: process.env.AUTHROCKET_SIGNUP_URL,
+			jslib: process.env.AUTHROCKET_JSLIB_URL
+		}
+	};
+	var instance = null;
+	var envName = 'prod';
+
+	var Config = (function () {
+		function Config() {
+			_classCallCheck(this, Config);
+
+			if (!instance) {
+				instance = this;
+			}
+			// console.log({description: 'Config object created.', config: merge(this, defaultConfig), func: 'constructor', obj: 'Config'});
+			return _.merge(instance, defaultConfig);
+		}
+
+		_createClass(Config, [{
+			key: 'logLevel',
+			get: function get() {
+				return defaultConfig.envs[envName].logLevel;
+			}
+		}, {
+			key: 'envName',
+			set: function set(newEnv) {
+				envName = newEnv;
+				// this.envName = newEnv;
+				// console.log('Environment name set:', envName);
+			}
+		}, {
+			key: 'env',
+			get: function get() {
+				return defaultConfig.envs[envName];
+			}
+		}]);
+
+		return Config;
+	})();
+
+	var config = new Config();
 
 	var AuthRocket = (function () {
 		function AuthRocket(settings) {
 			_classCallCheck(this, AuthRocket);
 
-			if (settings && _.isString(settings)) {
+			if (settings && ___default.isString(settings)) {
 				this.apiUrl = settings;
-			} else if (settings && _.isObject(settings)) {
+			} else {
 				//Set api url if within settings
-				this.apiUrl = _.has(settings, 'apiUrl') ? settings.apiUrl : config.urls.api;
-				this.apiKey = _.has(settings, 'apiKey') ? settings.apiKey : config.apiKey;
-				this.accountId = _.has(settings, 'accountId') ? settings.accountId : config.accountId;
-				this.realmId = _.has(settings, 'realmId') ? settings.realmId : config.realmId;
+				this.apiUrl = ___default.has(settings, 'apiUrl') ? settings.apiUrl : config.urls.api;
+				this.apiKey = ___default.has(settings, 'apiKey') ? settings.apiKey : config.apiKey;
+				this.accountId = ___default.has(settings, 'accountId') ? settings.accountId : config.accountId;
+				this.realmId = ___default.has(settings, 'realmId') ? settings.realmId : config.realmId;
 			}
 		}
 
@@ -126,13 +157,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 		}, {
 			key: 'requestWithHeaders',
 			value: function requestWithHeaders(endpoint, data) {
-				if (!_.has(this, ['accountId', 'apiKey', 'realm'])) {
-					console.error('Account, apiKey, and realm are required to make a request with headers');
-					return Promise.reject({ message: 'Account, apiKey, and realm are required to make a request with headers.' });
-				}
+				// if (!_.has(this, ['accountId', 'apiKey', 'realmId'])) {
+				//   console.error('Account, apiKey, and realm are required to make a request with headers.', JSON.stringify(this));
+				//   return Promise.reject({message: 'Account, apiKey, and realm are required to make a request with headers.'});
+				// }
 				var options = {
 					method: 'POST', //TODO: Handle other request methods
-					uri: this.apiUrl + '/' + endpoint,
+					uri: '' + this.apiUrl + endpoint,
 					headers: {
 						'X-Authrocket-Account': this.accountId,
 						'X-Authrocket-Api-Key': this.apiKey,
