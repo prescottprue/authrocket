@@ -34,7 +34,7 @@ const otherWatchFiles = ['package.json', '**/.eslintrc', '.jscsrc'];
 gulp.task('build:main', ['lint-src', 'clean'], function (done) {
   rollup.rollup({
     entry: config.entryFileName,
-    external:['lodash', 'request'],
+    external:['lodash', 'request-promise'],
   }).then(function (bundle) {
     var res = bundle.generate({
       // Don't worry about the fact that the source map is inlined at this step.
@@ -64,11 +64,6 @@ gulp.task('build:main', ['lint-src', 'clean'], function (done) {
 // the build from breaking due to poorly formatted code.
 gulp.task('build', function (callback) {
   runSequence(['lint-src', 'lint-test'], 'test', 'build:main', 'watch', callback);
-});
-
-//Browserify with external modules included
-gulp.task('addExternals', function() {
-  return bundle(browserifyAndWatchBundler());
 });
 
 //Run test once using Karma and exit
