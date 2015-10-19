@@ -34,7 +34,7 @@ const otherWatchFiles = ['package.json', '**/.eslintrc', '.jscsrc'];
 gulp.task('build:main', ['lint-src', 'clean'], function (done) {
   rollup.rollup({
     entry: config.entryFileName,
-    external:['lodash', 'request-promise', 'isomorphic-fetch'],
+    external:['lodash', 'superagent'], //Non esnext libraries
   }).then(function (bundle) {
     var res = bundle.generate({
       // Don't worry about the fact that the source map is inlined at this step.
@@ -98,7 +98,7 @@ createLintTask('lint-src', ['src/**/*.js']);
 createLintTask('lint-test', ['test/**/*.js', '!test/coverage/**']);
 
 // An alias of test
-gulp.task('default', ['test', 'build-bundle']);
+gulp.task('default', ['test', 'build']);
 
 //----------------------- Utility Functions -------------------------------\\
 

@@ -8,22 +8,22 @@ let request = {
 		if (queryData) {
 			req.query(queryData);
 		}
-		req = addAuthHeader(req);
+		// req = addAuthHeader(req);
 		return handleResponse(req);
 	},
 	post(endpoint, data) {
 		var req = superagent.post(endpoint).send(data);
-		req = addAuthHeader(req);
+		// req = addAuthHeader(req);
 		return handleResponse(req);
 	},
 	put(endpoint, data) {
 		var req = superagent.put(endpoint, data);
-		req = addAuthHeader(req);
+		// req = addAuthHeader(req);
 		return handleResponse(req);
 	},
 	del(endpoint, data) {
 		var req = superagent.put(endpoint, data);
-		req = addAuthHeader(req);
+		// req = addAuthHeader(req);
 		return handleResponse(req);
 	}
 };
@@ -43,11 +43,14 @@ function handleResponse(req) {
 				if (err && err.response) {
 					return reject(err.response.text);
 				}
-				logger.warn({description: 'Unauthorized. You must be signed into make this request.', error: err, func: 'handleResponse'});
+				logger.warn({description: 'Error response.', error: err, func: 'handleResponse'});
 				return reject(err);
 			}
 		});
 	});
+}
+function addAuthRocketHeaders() {
+
 }
 function addAuthHeader(req) {
 	if (token.string) {

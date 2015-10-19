@@ -1,6 +1,7 @@
 // import fetch from 'isomorphic-fetch';
 import config from './config';
 import _ from 'lodash';
+import request from './utils/request';
 
 export default class AuthRocket {
   constructor(settings) {
@@ -54,7 +55,7 @@ export default class AuthRocket {
    * @return {Promise}
    */
   signup(signupData) {
-    return this.requestWithHeaders(`${this.jsApiUrl}signup`, signupData).then((res) => {
+    return request.post(`${this.jsApiUrl}signup`, signupData).then((res) => {
       console.log('successful signup', res);
       //TODO: Handle error response
       return res;
