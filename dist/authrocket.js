@@ -251,7 +251,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       value: function login(loginData) {
         return request.post(config.urls.js + '/login', loginData).then(function (res) {
           _logger.log({ description: 'successful login', res: res });
-          //TODO: Handle error response that comes through 200
+          if (___default.has(res, 'error')) {
+            _logger.error({ description: 'Error signing up.', error: res.error, res: res, func: 'signup', obj: 'AuthRocket' });
+            return Promise.reject(res.error);
+          }
           return res;
         }, function (error) {
           _logger.error({ description: 'Error logging in.', error: error });
@@ -269,7 +272,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         console.log('config:', config.urls.js);
         return request.post(config.urls.js + '/logout', { token: token }).then(function (res) {
           _logger.log({ description: 'successful logout', res: res });
-          //TODO: Handle error response that come through 200
+          if (___default.has(res, 'error')) {
+            _logger.error({ description: 'Error signing up.', error: res.error, res: res, func: 'signup', obj: 'AuthRocket' });
+            return Promise.reject(res.error);
+          }
           return res;
         }, function (error) {
           _logger.error({ description: 'Error logging out.', error: error });
@@ -288,8 +294,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       key: 'signup',
       value: function signup(signupData) {
         return request.post(config.urls.js + '/signup', signupData).then(function (res) {
+          if (___default.has(res, 'error')) {
+            _logger.error({ description: 'Error signing up.', error: res.error, res: res, func: 'signup', obj: 'AuthRocket' });
+            return Promise.reject(res.error);
+          }
           _logger.log({ description: 'Successful signup', res: res, func: 'signup', obj: 'AuthRocket' });
-          //TODO: Handle error response that comes through 200
           return res;
         }, function (err) {
           _logger.error({ description: 'Error signing up.', error: err, func: 'signup', obj: 'AuthRocket' });
@@ -306,6 +315,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       value: function verify(token) {
         return request.post(config.urls.js + '/sessions/' + token).then(function (res) {
           _logger.log({ description: 'token is valid', res: res, func: 'verify', obj: 'AuthRocket' });
+          if (___default.has(res, 'error')) {
+            _logger.error({ description: 'Error signing up.', error: res.error, res: res, func: 'signup', obj: 'AuthRocket' });
+            return Promise.reject(res.error);
+          }
           return res;
         }, function (err) {
           _logger.error({ description: 'Token is invalid.', error: err, func: 'verify', obj: 'AuthRocket' });

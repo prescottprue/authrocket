@@ -34,7 +34,7 @@ NodeJS library for interfacing with [Auth Rocket](https://authrocket.com/).
 
 **Warning**: Not officially supported by Auth Rocket.
 ## Documentation
-Documentaiton is automatically generated from comments using [gulp-esdoc](https://www.npmjs.com/package/gulp-esdoc). To view a hosted version of the documentation view the docs page.
+Documentation is automatically generated from comments using [gulp-esdoc](https://www.npmjs.com/package/gulp-esdoc). To view a hosted version of the documentation view the docs page.
 
 ### [Docs Page](https://cdn.prue.io/authrocket/latest/docs/class/src/authrocket.js~AuthRocket.html)
 ## Getting Started

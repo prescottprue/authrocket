@@ -22,7 +22,10 @@ export default class AuthRocket {
   login(loginData) {
     return request.post(`${config.urls.js}/login`, loginData).then((res) => {
       logger.log({description: 'successful login', res: res});
-      //TODO: Handle error response that comes through 200
+      if (_.has(res, 'error')) {
+        logger.error({description: 'Error signing up.', error: res.error, res: res, func: 'signup', obj: 'AuthRocket'});
+        return Promise.reject(res.error);
+      }
       return res;
     }, (error) => {
       logger.error({description: 'Error logging in.', error: error});
@@ -37,7 +40,10 @@ export default class AuthRocket {
     console.log('config:', config.urls.js);
     return request.post(`${config.urls.js}/logout`, {token: token}).then((res) => {
       logger.log({description: 'successful logout', res: res});
-      //TODO: Handle error response that come through 200
+      if (_.has(res, 'error')) {
+        logger.error({description: 'Error signing up.', error: res.error, res: res, func: 'signup', obj: 'AuthRocket'});
+        return Promise.reject(res.error);
+      }
       return res;
     }, (error) => {
       logger.error({description: 'Error logging out.', error: error});
@@ -53,8 +59,11 @@ export default class AuthRocket {
    */
   signup(signupData) {
     return request.post(`${config.urls.js}/signup`, signupData).then((res) => {
+      if (_.has(res, 'error')) {
+        logger.error({description: 'Error signing up.', error: res.error, res: res, func: 'signup', obj: 'AuthRocket'});
+        return Promise.reject(res.error);
+      }
       logger.log({description: 'Successful signup', res: res, func: 'signup', obj: 'AuthRocket'});
-      //TODO: Handle error response that comes through 200
       return res;
     }, (err) => {
       logger.error({description: 'Error signing up.', error: err, func: 'signup', obj: 'AuthRocket'});
@@ -68,6 +77,10 @@ export default class AuthRocket {
   verify(token) {
     return request.post(`${config.urls.js}/sessions/${token}`).then((res) => {
       logger.log({description: 'token is valid', res: res, func: 'verify', obj: 'AuthRocket'});
+      if (_.has(res, 'error')) {
+        logger.error({description: 'Error signing up.', error: res.error, res: res, func: 'signup', obj: 'AuthRocket'});
+        return Promise.reject(res.error);
+      }
       return res;
     }, (err) => {
       logger.error({description: 'Token is invalid.', error: err, func: 'verify', obj: 'AuthRocket'});
