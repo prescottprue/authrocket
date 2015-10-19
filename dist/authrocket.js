@@ -249,6 +249,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     _createClass(AuthRocket, [{
       key: 'login',
       value: function login(loginData) {
+
         return request.post(config.urls.js + '/login', loginData).then(function (res) {
           _logger.log({ description: 'successful login', res: res });
           if (___default.has(res, 'error')) {
@@ -277,9 +278,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             return Promise.reject(res.error);
           }
           return res;
-        }, function (error) {
-          _logger.error({ description: 'Error logging out.', error: error });
-          return Promise.reject(error);
+        }, function (err) {
+          _logger.error({ description: 'Error logging out.', error: err });
+          return Promise.reject(err);
         });
       }
 
@@ -302,7 +303,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           return res;
         }, function (err) {
           _logger.error({ description: 'Error signing up.', error: err, func: 'signup', obj: 'AuthRocket' });
-          return Promise.reject(error);
+          return Promise.reject(err);
         });
       }
 

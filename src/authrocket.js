@@ -20,6 +20,7 @@ export default class AuthRocket {
    * @return {Promise}
    */
   login(loginData) {
+
     return request.post(`${config.urls.js}/login`, loginData).then((res) => {
       logger.log({description: 'successful login', res: res});
       if (_.has(res, 'error')) {
@@ -45,9 +46,9 @@ export default class AuthRocket {
         return Promise.reject(res.error);
       }
       return res;
-    }, (error) => {
-      logger.error({description: 'Error logging out.', error: error});
-      return Promise.reject(error);
+    }, (err) => {
+      logger.error({description: 'Error logging out.', error: err});
+      return Promise.reject(err);
     });
   }
   /** Signup a new user
@@ -67,7 +68,7 @@ export default class AuthRocket {
       return res;
     }, (err) => {
       logger.error({description: 'Error signing up.', error: err, func: 'signup', obj: 'AuthRocket'});
-      return Promise.reject(error);
+      return Promise.reject(err);
     });
   }
   /** Verify an existing token is valid
