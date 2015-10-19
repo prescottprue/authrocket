@@ -6,7 +6,7 @@ let defaultConfig = {
 	realmId: process.env.AUTHROCKET_REALM_ID,
 	jwtSecret: process.env.AUTHROCKET_JWT_SECRET,
   apiUrl: process.env.AUTHROCKET_API_URL  || 'https://api-e1.authrocket.com/v1/',
-  jsLibUrl: process.env.AUTHROCKET_JSLIB_URL
+  jsUrl: process.env.AUTHROCKET_JS_URL
 };
 let configInstance = null; //Singleton variable
 class Config {
@@ -24,10 +24,11 @@ class Config {
   }
   //Map getters that handle removing trailing slash of urls
   get urls() {
-    let jsUrl = this.jsLibUrl;
+    let jsUrl = this.jsUrl;
+    let apiUrl = this.apiUrl;
     return {
       get api() {
-        return this.apiUrl ? removeTrailingSlash(this.apiUrl) : null;
+        return apiUrl ? removeTrailingSlash(apiUrl) : null;
       },
       get js() {
         return jsUrl ? removeTrailingSlash(jsUrl) : null;

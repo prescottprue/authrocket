@@ -16,7 +16,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     realmId: process.env.AUTHROCKET_REALM_ID,
     jwtSecret: process.env.AUTHROCKET_JWT_SECRET,
     apiUrl: process.env.AUTHROCKET_API_URL || 'https://api-e1.authrocket.com/v1/',
-    jsLibUrl: process.env.AUTHROCKET_JSLIB_URL
+    jsUrl: process.env.AUTHROCKET_JS_URL
   };
   var configInstance = null; //Singleton variable
 
@@ -45,11 +45,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: 'urls',
       get: function get() {
-        var jsUrl = this.jsLibUrl;
+        var jsUrl = this.jsUrl;
+        var apiUrl = this.apiUrl;
         return Object.defineProperties({}, {
           api: {
             get: function get() {
-              return this.apiUrl ? removeTrailingSlash(this.apiUrl) : null;
+              return apiUrl ? removeTrailingSlash(apiUrl) : null;
             },
             configurable: true,
             enumerable: true
