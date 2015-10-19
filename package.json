@@ -1,7 +1,7 @@
 {
   "name": "authrocket",
-  "version": "0.0.1",
-  "description": "NodeJS library for interfacing with AuthRocket service.",
+  "version": "0.0.2",
+  "description": "Library for interfacing with AuthRocket service.",
   "main": "dist/authrocket.js",
   "jsnext:main": "dist/authrocket.js",
   "babelBoilerplateOptions": {
@@ -15,7 +15,7 @@
     ]
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "gulp"
   },
   "repository": {
     "type": "git",
@@ -29,7 +29,7 @@
     "tessellate"
   ],
   "author": "Prescott Prue <sprue.dev@gmail.com>",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "babel-core": "^5.2.17",
     "babel-eslint": "^4.0.5",
@@ -42,7 +42,9 @@
     "del": "^1.1.1",
     "glob": "^5.0.14",
     "gulp": "^3.8.10",
+    "gulp-awspublish": "^3.0.1",
     "gulp-babel": "^5.0.0",
+    "gulp-esdoc": "^0.1.0",
     "gulp-eslint": "^1.0.0",
     "gulp-file": "^0.2.0",
     "gulp-filter": "^3.0.0",

@@ -13,9 +13,12 @@ const buffer = require('vinyl-buffer');
 const rollup = require('rollup');
 const runSequence = require('run-sequence');
 const source = require('vinyl-source-stream');
+const awspublish = require('gulp-awspublish');
 const browserSync = require('browser-sync').create();
 const KarmaServer = require('karma').Server;
 const _ = require('lodash');
+const esdoc = require("gulp-esdoc");
+const conf = require('./config.json');
 
 // Gather the library data from `package.json`
 const manifest = require('./package.json');
@@ -29,6 +32,9 @@ const jsWatchFiles = ['src/**/*', 'test/**/*'];
 
 // These are files other than JS files which are to be watched.
 const otherWatchFiles = ['package.json', '**/.eslintrc', '.jscsrc'];
+
+//Create CDN Publisher
+var publisher = CDNPublisher();
 
 // Build main and minified versions of the library
 gulp.task('build:main', ['lint-src', 'clean'], function (done) {
@@ -81,6 +87,45 @@ gulp.task('watch', function() {
   gulp.watch(watchFiles, ['build']);
 });
 
+//Upload to both locations of CDN
+gulp.task('upload', function (callback) {
+  runSequence('upload:version', 'upload:latest', 'upload:docs', callback);
+});
+
+//Upload to CDN under version
+gulp.task('upload:version', function() {
+  return gulp.src('./' + conf.distFolder + '/**')
+    .pipe($.rename(function (path) {
+      path.dirname = conf.cdn.path + '/' + manifest.version + '/' + path.dirname;
+    }))
+    .pipe(publisher.publish())
+    .pipe(awspublish.reporter());
+});
+//Upload to CDN under "/latest"
+gulp.task('upload:latest', function() {
+  return gulp.src('./' + conf.distFolder + '/**')
+    .pipe($.rename(function (path) {
+      path.dirname = conf.cdn.path + '/latest/' + path.dirname;
+    }))
+    .pipe(publisher.publish())
+    .pipe(awspublish.reporter());
+});
+//Upload to CDN under "/latest"
+gulp.task('upload:docs', function() {
+  return gulp.src('./' + conf.folders.docs + '/**')
+    .pipe($.rename(function (path) {
+      path.dirname = conf.cdn.path + '/latest/docs/' + path.dirname;
+    }))
+    .pipe(publisher.publish())
+    .pipe(awspublish.reporter());
+});
+
+// Generate docs based on comments
+const esdocConfig = require('./esdoc.json');
+gulp.task('docs', function() {
+  gulp.src('./src')
+  .pipe(esdoc(esdocConfig));
+});
 // Remove the built files
 gulp.task('clean', function(cb) {
   del([destinationFolder], cb);
@@ -97,10 +142,22 @@ createLintTask('lint-src', ['src/**/*.js']);
 // Lint our test code
 createLintTask('lint-test', ['test/**/*.js', '!test/coverage/**']);
 
+
+
 // An alias of test
 gulp.task('default', ['test', 'build']);
 
 //----------------------- Utility Functions -------------------------------\\
+function CDNPublisher () {
+  var s3Config = {
+    accessKeyId:process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey:process.env.AWS_SECRET_ACCESS_KEY,
+    params:{
+      Bucket:conf.cdn.bucketName
+    }
+  };
+  return awspublish.create(s3Config);
+}
 
 function bundle(bundler) {
   return bundler.bundle()

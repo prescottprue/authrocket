@@ -1,0 +1,12 @@
+{
+	"distFolder":"dist",
+	"folders": {
+		"dist": "dist",
+		"dev": "dev",
+		"docs": "docs"
+	},
+	"cdn":{
+		"bucketName":"prue-cdn",
+		"path":"authrocket"
+	}
+}

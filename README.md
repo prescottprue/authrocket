@@ -1,4 +1,31 @@
 # AuthRocket
+
+<p align="center">
+  <!-- Npm Version -->
+  <a href="https://npmjs.org/package/authrocket">
+    <img src="https://img.shields.io/npm/v/authrocket.svg" alt="npm version">
+  </a>
+  <!-- Build Status -->
+  <a href="https://travis-ci.org/prescottprue/authrocket">
+    <img src="http://img.shields.io/travis/prescottprue/authrocket.svg" alt="build status">
+  </a>
+  <!-- Dependency Status -->
+  <a href="https://david-dm.org/prescottprue/authrocket">
+    <img src="https://david-dm.org/prescottprue/authrocket.svg" alt="dependency status">
+  </a>
+  <!-- Codeclimate -->
+  <a href="https://codeclimate.com/github/prescottprue/authrocket">
+    <img src="https://codeclimate.com/github/prescottprue/authrocket/badges/gpa.svg" alt="codeclimate">
+  </a>
+  <!-- Coverage -->
+  <a href="https://codeclimate.com/github/prescottprue/authrocket">
+    <img src="https://codeclimate.com/github/prescottprue/authrocket/badges/coverage.svg" alt="coverage">
+  </a>
+  <!-- License -->
+  <a href="https://github.com/prescottprue/authrocket/blob/master/LICENSE.md">
+    <img src="https://img.shields.io/npm/l/authrocket.svg" alt="license">
+  </a>
+</p>
 NodeJS library for interfacing with [Auth Rocket](https://authrocket.com/).
 
 ## Why Not Use AuthRocket's `authrocket.js`?
@@ -6,6 +33,10 @@ NodeJS library for interfacing with [Auth Rocket](https://authrocket.com/).
 [Authrocket.js](https://authrocket.com/docs/js/authrocket_js) requires including jQuery and is therefore not a useful solution for running on NodeJS or within a front end project that doesn't use jQuery. Also, the API for the default AuthRocket library only provides methods for LoginRocket actions as it is for client side usage only.
 
 **Warning**: Not officially supported by Auth Rocket.
+## Documentation
+Documentaiton is automatically generated from comments using [gulp-esdoc](https://www.npmjs.com/package/gulp-esdoc). To view a hosted version of the documentation view the docs page.
+
+### [Docs Page](https://cdn.prue.io/authrocket/latest/docs/class/src/authrocket.js~AuthRocket.html)
 ## Getting Started
 1. Install through npm: `npm install --save authrocket`
 2. Import AuthRocket:
