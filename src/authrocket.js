@@ -2,6 +2,7 @@
 import config from './config';
 import _ from 'lodash';
 import request from './utils/request';
+import logger from './utils/logger';
 
 export default class AuthRocket {
   constructor(settings) {
@@ -9,12 +10,7 @@ export default class AuthRocket {
       this.apiUrl = settings;
     } else {
       //Set api url if within settings
-      this.apiUrl = _.has(settings, 'apiUrl') ? settings.apiUrl : config.urls.api;
-      this.apiKey = _.has(settings, 'apiKey') ? settings.apiKey : config.apiKey;
-      this.accountId = _.has(settings, 'accountId') ? settings.accountId : config.accountId;
-      this.realmId = _.has(settings, 'realmId') ? settings.realmId : config.realmId;
-      this.jsApiUrl = _.has(settings, 'jsApiUrl') ? settings.urls.jslib : config.urls.jslib;
-      this.signupUrl = _.has(settings, 'signupUrl') ? settings.urls.signup : config.urls.signup || config.urls.api;
+      config.applySettings(settings);
     }
   }
   /** Login as a user
@@ -24,12 +20,12 @@ export default class AuthRocket {
    * @return {Promise}
    */
   login(loginData) {
-    return this.requestWithHeaders('login', loginData).then((res) => {
-      console.log('successful login', res);
-      //TODO: Handle error response
+    return request.post(`${config.urls.js}/login`, loginData).then((res) => {
+      logger.log({description: 'successful login', res: res});
+      //TODO: Handle error response that comes through 200
       return res;
     }, (error) => {
-      console.error('Error logging in.', error);
+      logger.error({description: 'Error logging in.', error: error});
       return Promise.reject(error);
     });
   }
@@ -38,12 +34,13 @@ export default class AuthRocket {
    * @return {Promise}
    */
   logout(token) {
-    return this.requestWithHeaders('logout', {token: token}).then((res) => {
-      console.log('successful logout', res);
-      //TODO: Handle error response
+    console.log('config:', config.urls.js);
+    return request.post(`${config.urls.js}/logout`, {token: token}).then((res) => {
+      logger.log({description: 'successful logout', res: res});
+      //TODO: Handle error response that come through 200
       return res;
     }, (error) => {
-      console.error('Error logging out.', error);
+      logger.error({description: 'Error logging out.', error: error});
       return Promise.reject(error);
     });
   }
@@ -55,12 +52,12 @@ export default class AuthRocket {
    * @return {Promise}
    */
   signup(signupData) {
-    return request.post(`${this.jsApiUrl}signup`, signupData).then((res) => {
-      console.log('successful signup', res);
-      //TODO: Handle error response
+    return request.post(`${config.urls.js}/signup`, signupData).then((res) => {
+      logger.log({description: 'Successful signup', res: res, func: 'signup', obj: 'AuthRocket'});
+      //TODO: Handle error response that comes through 200
       return res;
-    }, (error) => {
-      console.error('Error signing up.', error);
+    }, (err) => {
+      logger.error({description: 'Error signing up.', error: err, func: 'signup', obj: 'AuthRocket'});
       return Promise.reject(error);
     });
   }
@@ -69,11 +66,11 @@ export default class AuthRocket {
    * @return {Promise}
    */
   verify(token) {
-    return this.requestWithHeaders(`sessions/${token}`).then((res) => {
-      console.log('token is valid', res);
+    return request.post(`${config.urls.js}/sessions/${token}`).then((res) => {
+      logger.log({description: 'token is valid', res: res, func: 'verify', obj: 'AuthRocket'});
       return res;
     }, (err) => {
-      console.error('Token is invalid.', err);
+      logger.error({description: 'Token is invalid.', error: err, func: 'verify', obj: 'AuthRocket'});
       return Promise.reject(err);
     });
   }
@@ -85,44 +82,4 @@ export default class AuthRocket {
    requestWithHeaders(url, data) {
 
    }
-
-  // requestWithHeaders(url, data) {
-  //   // if (!_.has(this, ['accountId', 'apiKey', 'realmId'])) {
-  //   //   console.error('Account, apiKey, and realm are required to make a request with headers.', JSON.stringify(this));
-  //   //   return Promise.reject({message: 'Account, apiKey, and realm are required to make a request with headers.'});
-  //   // }
-  //   let options = {
-  //     method: 'post', //TODO: Handle other request methods
-  //     headers: {
-  //     //   'X-Authrocket-Account': this.accountId,
-  //     //   'X-Authrocket-Api-Key': this.apiKey,
-  //     //   'X-Authrocket-Realm': this.realmId,
-  //       'Accept': 'application/json',
-  //       'Content-Type': 'application/json',
-  //     //   'User-agent': 'https://github.com/prescottprue/authrocket'
-  //     }
-  //   };
-  //   //Add data to request if it exists
-  //   if (data) {
-  //     options.body = data;
-  //   }
-  //   console.log('requesting with options:',url, options);
-  //   return fetch(url, options).then((res) => {
-  //     if (res.status >= 200 && res.status < 300) {
-  //       if (res.error) {
-  //         return Promise.reject(res.error);
-  //       }
-  //       console.log('response with text:', res.json());
-  //       return res.json();
-  //     } else {
-  //       console.log('error response:', res);
-  //       var error = new Error(res.statusText);
-  //       error.response = res;
-  //       return Promise.reject(res.statusText);
-  //     }
-  //   }).then((text) => {
-  //     console.log('Text response:', text);
-  //     return text;
-  //   });
-  // }
 }

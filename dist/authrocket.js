@@ -11,43 +11,72 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
   superagent = 'default' in superagent ? superagent['default'] : superagent;
 
   var defaultConfig = {
-    envName: 'local',
     accountId: process.env.AUTHROCKET_ACCOUNT_ID,
     apiKey: process.env.AUTHROCKET_API_KEY,
     realmId: process.env.AUTHROCKET_REALM_ID,
     jwtSecret: process.env.AUTHROCKET_JWT_SECRET,
-    urls: {
-      api: process.env.AUTHROCKET_API_URL || 'https://api-e1.authrocket.com/v1/',
-      login: process.env.AUTHROCKET_LOGIN_URL,
-      signup: process.env.AUTHROCKET_SIGNUP_URL,
-      jslib: process.env.AUTHROCKET_JSLIB_URL
-    }
+    apiUrl: process.env.AUTHROCKET_API_URL || 'https://api-e1.authrocket.com/v1/',
+    jsLibUrl: process.env.AUTHROCKET_JSLIB_URL
   };
-  var instance = null;
+  var configInstance = null; //Singleton variable
 
-  var Config = function Config() {
-    _classCallCheck(this, Config);
+  var Config = (function () {
+    function Config() {
+      _classCallCheck(this, Config);
 
-    if (!instance) {
-      instance = this;
+      if (!configInstance) {
+        configInstance = this;
+      }
+      // console.log({description: 'Config object created.', config: merge(this, defaultConfig), func: 'constructor', obj: 'Config'});
+      return _.merge(configInstance, defaultConfig);
     }
-    // console.log({description: 'Config object created.', config: merge(this, defaultConfig), func: 'constructor', obj: 'Config'});
-    return _.merge(instance, defaultConfig);
-  }
-  // get logLevel() {
-  // 	return defaultConfig.envs[envName].logLevel;
-  // }
-  // set envName(newEnv) {
-  // 	envName = newEnv;
-  // 	// this.envName = newEnv;
-  // 	// console.log('Environment name set:', envName);
-  // }
-  // get env() {
-  // 	return defaultConfig.envs[envName];
-  // }
-  ;
+
+    _createClass(Config, [{
+      key: 'applySettings',
+      value: function applySettings(settingsData) {
+        var _this = this;
+
+        _.each(_.keys(settingsData), function (key) {
+          _this[key] = settingsData[key];
+        });
+      }
+
+      //Map getters that handle removing trailing slash of urls
+    }, {
+      key: 'urls',
+      get: function get() {
+        var jsUrl = this.jsLibUrl;
+        return Object.defineProperties({}, {
+          api: {
+            get: function get() {
+              return this.apiUrl ? removeTrailingSlash(this.apiUrl) : null;
+            },
+            configurable: true,
+            enumerable: true
+          },
+          js: {
+            get: function get() {
+              return jsUrl ? removeTrailingSlash(jsUrl) : null;
+            },
+            configurable: true,
+            enumerable: true
+          }
+        });
+      }
+    }]);
+
+    return Config;
+  })();
 
   var config = new Config();
+
+  function removeTrailingSlash(url) {
+    if (!_.isString(url)) {
+      logger.error({ description: 'Slash can only be removed from strings.', func: 'removeTrailingSlash', file: 'config' });
+      return url;
+    }
+    return url.replace(/\/$/, '');
+  }
 
   //Set default log level to debug
   var logLevel = 'debug';
@@ -55,7 +84,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
   if (config.logLevel) {
     logLevel = config.logLevel;
   }
-  var logger = {
+  var _logger = {
     log: function log(logData) {
       var msgArgs = buildMessageArgs(logData);
       if (config.envName == 'production') {
@@ -176,6 +205,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }
   };
 
+  //Wrap response in promise that has error handling
   function handleResponse(req) {
     return new Promise(function (resolve, reject) {
       req.end(function (err, res) {
@@ -184,12 +214,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           return resolve(res.body);
         } else {
           if (err.status == 401) {
-            logger.warn({ description: 'Unauthorized. You must be signed into make this request.', func: 'handleResponse' });
+            _logger.warn({ description: 'Unauthorized. You must be signed into make this request.', func: 'handleResponse' });
           }
           if (err && err.response) {
             return reject(err.response.text);
           }
-          logger.warn({ description: 'Error response.', error: err, func: 'handleResponse' });
+          _logger.warn({ description: 'Error response.', error: err, func: 'handleResponse' });
           return reject(err);
         }
       });
@@ -204,12 +234,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.apiUrl = settings;
       } else {
         //Set api url if within settings
-        this.apiUrl = ___default.has(settings, 'apiUrl') ? settings.apiUrl : config.urls.api;
-        this.apiKey = ___default.has(settings, 'apiKey') ? settings.apiKey : config.apiKey;
-        this.accountId = ___default.has(settings, 'accountId') ? settings.accountId : config.accountId;
-        this.realmId = ___default.has(settings, 'realmId') ? settings.realmId : config.realmId;
-        this.jsApiUrl = ___default.has(settings, 'jsApiUrl') ? settings.urls.jslib : config.urls.jslib;
-        this.signupUrl = ___default.has(settings, 'signupUrl') ? settings.urls.signup : config.urls.signup || config.urls.api;
+        config.applySettings(settings);
       }
     }
 
@@ -223,12 +248,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     _createClass(AuthRocket, [{
       key: 'login',
       value: function login(loginData) {
-        return this.requestWithHeaders('login', loginData).then(function (res) {
-          console.log('successful login', res);
-          //TODO: Handle error response
+        return request.post(config.urls.js + '/login', loginData).then(function (res) {
+          _logger.log({ description: 'successful login', res: res });
+          //TODO: Handle error response that comes through 200
           return res;
         }, function (error) {
-          console.error('Error logging in.', error);
+          _logger.error({ description: 'Error logging in.', error: error });
           return Promise.reject(error);
         });
       }
@@ -240,12 +265,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: 'logout',
       value: function logout(token) {
-        return this.requestWithHeaders('logout', { token: token }).then(function (res) {
-          console.log('successful logout', res);
-          //TODO: Handle error response
+        console.log('config:', config.urls.js);
+        return request.post(config.urls.js + '/logout', { token: token }).then(function (res) {
+          _logger.log({ description: 'successful logout', res: res });
+          //TODO: Handle error response that come through 200
           return res;
         }, function (error) {
-          console.error('Error logging out.', error);
+          _logger.error({ description: 'Error logging out.', error: error });
           return Promise.reject(error);
         });
       }
@@ -260,12 +286,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: 'signup',
       value: function signup(signupData) {
-        return request.post(this.jsApiUrl + 'signup', signupData).then(function (res) {
-          console.log('successful signup', res);
-          //TODO: Handle error response
+        return request.post(config.urls.js + '/signup', signupData).then(function (res) {
+          _logger.log({ description: 'Successful signup', res: res, func: 'signup', obj: 'AuthRocket' });
+          //TODO: Handle error response that comes through 200
           return res;
-        }, function (error) {
-          console.error('Error signing up.', error);
+        }, function (err) {
+          _logger.error({ description: 'Error signing up.', error: err, func: 'signup', obj: 'AuthRocket' });
           return Promise.reject(error);
         });
       }
@@ -277,11 +303,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: 'verify',
       value: function verify(token) {
-        return this.requestWithHeaders('sessions/' + token).then(function (res) {
-          console.log('token is valid', res);
+        return request.post(config.urls.js + '/sessions/' + token).then(function (res) {
+          _logger.log({ description: 'token is valid', res: res, func: 'verify', obj: 'AuthRocket' });
           return res;
         }, function (err) {
-          console.error('Token is invalid.', err);
+          _logger.error({ description: 'Token is invalid.', error: err, func: 'verify', obj: 'AuthRocket' });
           return Promise.reject(err);
         });
       }
@@ -294,46 +320,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: 'requestWithHeaders',
       value: function requestWithHeaders(url, data) {}
-
-      // requestWithHeaders(url, data) {
-      //   // if (!_.has(this, ['accountId', 'apiKey', 'realmId'])) {
-      //   //   console.error('Account, apiKey, and realm are required to make a request with headers.', JSON.stringify(this));
-      //   //   return Promise.reject({message: 'Account, apiKey, and realm are required to make a request with headers.'});
-      //   // }
-      //   let options = {
-      //     method: 'post', //TODO: Handle other request methods
-      //     headers: {
-      //     //   'X-Authrocket-Account': this.accountId,
-      //     //   'X-Authrocket-Api-Key': this.apiKey,
-      //     //   'X-Authrocket-Realm': this.realmId,
-      //       'Accept': 'application/json',
-      //       'Content-Type': 'application/json',
-      //     //   'User-agent': 'https://github.com/prescottprue/authrocket'
-      //     }
-      //   };
-      //   //Add data to request if it exists
-      //   if (data) {
-      //     options.body = data;
-      //   }
-      //   console.log('requesting with options:',url, options);
-      //   return fetch(url, options).then((res) => {
-      //     if (res.status >= 200 && res.status < 300) {
-      //       if (res.error) {
-      //         return Promise.reject(res.error);
-      //       }
-      //       console.log('response with text:', res.json());
-      //       return res.json();
-      //     } else {
-      //       console.log('error response:', res);
-      //       var error = new Error(res.statusText);
-      //       error.response = res;
-      //       return Promise.reject(res.statusText);
-      //     }
-      //   }).then((text) => {
-      //     console.log('Text response:', text);
-      //     return text;
-      //   });
-      // }
     }]);
 
     return AuthRocket;

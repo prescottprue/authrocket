@@ -30,6 +30,7 @@ let request = {
 
 export default request;
 
+//Wrap response in promise that has error handling
 function handleResponse(req) {
 	return new Promise((resolve, reject) => {
 		req.end((err, res) => {
@@ -49,13 +50,23 @@ function handleResponse(req) {
 		});
 	});
 }
+//Add auth rocket headers to request
 function addAuthRocketHeaders() {
-
+	//TODO: Make this work
+  let headers = {
+       'X-Authrocket-Account': config.accountId,
+       'X-Authrocket-Api-Key': config.apiKey,
+       'X-Authrocket-Realm': config.realmId,
+       'Accept': 'application/json',
+       'Content-Type': 'application/json',
+       'User-agent': 'https://github.com/prescottprue/authrocket'
+   };
 }
+//Add token to Authorization header if it exists
 function addAuthHeader(req) {
-	if (token.string) {
-		req = req.set('Authorization', 'Bearer ' + token.string);
-		console.info({message: 'Set auth header', func: 'addAuthHeader', file: 'request'});
-	}
-	return req;
+	// if (token.string) {
+	// 	req = req.set('Authorization', 'Bearer ' + token.string);
+	// 	console.info({message: 'Set auth header', func: 'addAuthHeader', file: 'request'});
+	// }
+	// return req;
 }
