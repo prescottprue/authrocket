@@ -3,11 +3,10 @@ var _createClass = (function () { function defineProperties(target, props) { for
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('request-promise'), require('lodash')) : typeof define === 'function' && define.amd ? define(['request-promise', 'lodash'], factory) : global.AuthRocket = factory(global.request, global._);
-})(this, function (request, _) {
+	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('lodash')) : typeof define === 'function' && define.amd ? define(['lodash'], factory) : global.AuthRocket = factory(global._);
+})(this, function (_) {
 	'use strict';
 
-	request = 'default' in request ? request['default'] : request;
 	var ___default = 'default' in _ ? _['default'] : _;
 
 	var defaultConfig = {
@@ -24,40 +23,28 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 		}
 	};
 	var instance = null;
-	var envName = 'prod';
 
-	var Config = (function () {
-		function Config() {
-			_classCallCheck(this, Config);
+	var Config = function Config() {
+		_classCallCheck(this, Config);
 
-			if (!instance) {
-				instance = this;
-			}
-			// console.log({description: 'Config object created.', config: merge(this, defaultConfig), func: 'constructor', obj: 'Config'});
-			return _.merge(instance, defaultConfig);
+		if (!instance) {
+			instance = this;
 		}
-
-		_createClass(Config, [{
-			key: 'logLevel',
-			get: function get() {
-				return defaultConfig.envs[envName].logLevel;
-			}
-		}, {
-			key: 'envName',
-			set: function set(newEnv) {
-				envName = newEnv;
-				// this.envName = newEnv;
-				// console.log('Environment name set:', envName);
-			}
-		}, {
-			key: 'env',
-			get: function get() {
-				return defaultConfig.envs[envName];
-			}
-		}]);
-
-		return Config;
-	})();
+		// console.log({description: 'Config object created.', config: merge(this, defaultConfig), func: 'constructor', obj: 'Config'});
+		return _.merge(instance, defaultConfig);
+	}
+	// get logLevel() {
+	// 	return defaultConfig.envs[envName].logLevel;
+	// }
+	// set envName(newEnv) {
+	// 	envName = newEnv;
+	// 	// this.envName = newEnv;
+	// 	// console.log('Environment name set:', envName);
+	// }
+	// get env() {
+	// 	return defaultConfig.envs[envName];
+	// }
+	;
 
 	var config = new Config();
 
@@ -73,6 +60,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				this.apiKey = ___default.has(settings, 'apiKey') ? settings.apiKey : config.apiKey;
 				this.accountId = ___default.has(settings, 'accountId') ? settings.accountId : config.accountId;
 				this.realmId = ___default.has(settings, 'realmId') ? settings.realmId : config.realmId;
+				this.jsApiUrl = ___default.has(settings, 'jsApiUrl') ? settings.urls.jslib : config.urls.jslib;
+				this.signupUrl = ___default.has(settings, 'signupUrl') ? settings.urls.signup : config.urls.signup || config.urls.api;
 			}
 		}
 
@@ -123,7 +112,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 		}, {
 			key: 'signup',
 			value: function signup(signupData) {
-				return this.requestWithHeaders('signup', signupData).then(function (res) {
+				return this.requestWithHeaders(this.jsApiUrl + 'signup', signupData).then(function (res) {
 					console.log('successful signup', res);
 					//TODO: Handle error response
 					return res;
@@ -156,36 +145,47 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     */
 		}, {
 			key: 'requestWithHeaders',
-			value: function requestWithHeaders(endpoint, data) {
-				// if (!_.has(this, ['accountId', 'apiKey', 'realmId'])) {
-				//   console.error('Account, apiKey, and realm are required to make a request with headers.', JSON.stringify(this));
-				//   return Promise.reject({message: 'Account, apiKey, and realm are required to make a request with headers.'});
-				// }
-				var options = {
-					method: 'POST', //TODO: Handle other request methods
-					uri: '' + this.apiUrl + endpoint,
-					headers: {
-						'X-Authrocket-Account': this.accountId,
-						'X-Authrocket-Api-Key': this.apiKey,
-						'X-Authrocket-Realm': this.realmId,
-						'Accept': 'application/json',
-						'Content-Type': 'application/json',
-						'User-agent': 'https://github.com/prescottprue/authrocket'
-					}
-				};
-				//Add data to request if it exists
-				if (data) {
-					options.body = data;
-				}
-				return request(options).then(function (res) {
-					console.log('successful request:', res);
-					//TODO: Handle error response
-					return res;
-				}, function (error) {
-					console.error('Error with request:', error);
-					return Promise.reject(error);
-				});
-			}
+			value: function requestWithHeaders(url, data) {}
+
+			// requestWithHeaders(url, data) {
+			//   // if (!_.has(this, ['accountId', 'apiKey', 'realmId'])) {
+			//   //   console.error('Account, apiKey, and realm are required to make a request with headers.', JSON.stringify(this));
+			//   //   return Promise.reject({message: 'Account, apiKey, and realm are required to make a request with headers.'});
+			//   // }
+			//   let options = {
+			//     method: 'post', //TODO: Handle other request methods
+			//     headers: {
+			//     //   'X-Authrocket-Account': this.accountId,
+			//     //   'X-Authrocket-Api-Key': this.apiKey,
+			//     //   'X-Authrocket-Realm': this.realmId,
+			//       'Accept': 'application/json',
+			//       'Content-Type': 'application/json',
+			//     //   'User-agent': 'https://github.com/prescottprue/authrocket'
+			//     }
+			//   };
+			//   //Add data to request if it exists
+			//   if (data) {
+			//     options.body = data;
+			//   }
+			//   console.log('requesting with options:',url, options);
+			//   return fetch(url, options).then((res) => {
+			//     if (res.status >= 200 && res.status < 300) {
+			//       if (res.error) {
+			//         return Promise.reject(res.error);
+			//       }
+			//       console.log('response with text:', res.json());
+			//       return res.json();
+			//     } else {
+			//       console.log('error response:', res);
+			//       var error = new Error(res.statusText);
+			//       error.response = res;
+			//       return Promise.reject(res.statusText);
+			//     }
+			//   }).then((text) => {
+			//     console.log('Text response:', text);
+			//     return text;
+			//   });
+			// }
 		}]);
 
 		return AuthRocket;

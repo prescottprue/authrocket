@@ -1,4 +1,4 @@
-import request from 'request-promise';
+// import fetch from 'isomorphic-fetch';
 import config from './config';
 import _ from 'lodash';
 
@@ -12,6 +12,8 @@ export default class AuthRocket {
       this.apiKey = _.has(settings, 'apiKey') ? settings.apiKey : config.apiKey;
       this.accountId = _.has(settings, 'accountId') ? settings.accountId : config.accountId;
       this.realmId = _.has(settings, 'realmId') ? settings.realmId : config.realmId;
+      this.jsApiUrl = _.has(settings, 'jsApiUrl') ? settings.urls.jslib : config.urls.jslib;
+      this.signupUrl = _.has(settings, 'signupUrl') ? settings.urls.signup : config.urls.signup || config.urls.api;
     }
   }
   /** Login as a user
@@ -52,7 +54,7 @@ export default class AuthRocket {
    * @return {Promise}
    */
   signup(signupData) {
-    return this.requestWithHeaders('signup', signupData).then((res) => {
+    return this.requestWithHeaders(`${this.jsApiUrl}signup`, signupData).then((res) => {
       console.log('successful signup', res);
       //TODO: Handle error response
       return res;
@@ -79,34 +81,47 @@ export default class AuthRocket {
    * @param {Object|String} data - Request data
    * @return {Promise}
    */
-  requestWithHeaders(endpoint, data) {
-    // if (!_.has(this, ['accountId', 'apiKey', 'realmId'])) {
-    //   console.error('Account, apiKey, and realm are required to make a request with headers.', JSON.stringify(this));
-    //   return Promise.reject({message: 'Account, apiKey, and realm are required to make a request with headers.'});
-    // }
-    let options = {
-      method: 'POST', //TODO: Handle other request methods
-      uri: `${this.apiUrl}${endpoint}`,
-      headers: {
-        'X-Authrocket-Account': this.accountId,
-        'X-Authrocket-Api-Key': this.apiKey,
-        'X-Authrocket-Realm': this.realmId,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'User-agent': 'https://github.com/prescottprue/authrocket'
-      }
-    };
-    //Add data to request if it exists
-    if (data) {
-      options.body = data;
-    }
-    return request(options).then((res) => {
-      console.log('successful request:', res);
-      //TODO: Handle error response
-      return res;
-    }, (error) => {
-      console.error('Error with request:', error);
-      return Promise.reject(error);
-    });
-  }
+   requestWithHeaders(url, data) {
+
+   }
+
+  // requestWithHeaders(url, data) {
+  //   // if (!_.has(this, ['accountId', 'apiKey', 'realmId'])) {
+  //   //   console.error('Account, apiKey, and realm are required to make a request with headers.', JSON.stringify(this));
+  //   //   return Promise.reject({message: 'Account, apiKey, and realm are required to make a request with headers.'});
+  //   // }
+  //   let options = {
+  //     method: 'post', //TODO: Handle other request methods
+  //     headers: {
+  //     //   'X-Authrocket-Account': this.accountId,
+  //     //   'X-Authrocket-Api-Key': this.apiKey,
+  //     //   'X-Authrocket-Realm': this.realmId,
+  //       'Accept': 'application/json',
+  //       'Content-Type': 'application/json',
+  //     //   'User-agent': 'https://github.com/prescottprue/authrocket'
+  //     }
+  //   };
+  //   //Add data to request if it exists
+  //   if (data) {
+  //     options.body = data;
+  //   }
+  //   console.log('requesting with options:',url, options);
+  //   return fetch(url, options).then((res) => {
+  //     if (res.status >= 200 && res.status < 300) {
+  //       if (res.error) {
+  //         return Promise.reject(res.error);
+  //       }
+  //       console.log('response with text:', res.json());
+  //       return res.json();
+  //     } else {
+  //       console.log('error response:', res);
+  //       var error = new Error(res.statusText);
+  //       error.response = res;
+  //       return Promise.reject(res.statusText);
+  //     }
+  //   }).then((text) => {
+  //     console.log('Text response:', text);
+  //     return text;
+  //   });
+  // }
 }

@@ -22,17 +22,17 @@ class Config {
 		// console.log({description: 'Config object created.', config: merge(this, defaultConfig), func: 'constructor', obj: 'Config'});
 		return merge(instance, defaultConfig);
 	}
-	get logLevel() {
-		return defaultConfig.envs[envName].logLevel;
-	}
-	set envName(newEnv) {
-		envName = newEnv;
-		// this.envName = newEnv;
-		// console.log('Environment name set:', envName);
-	}
-	get env() {
-		return defaultConfig.envs[envName];
-	}
+	// get logLevel() {
+	// 	return defaultConfig.envs[envName].logLevel;
+	// }
+	// set envName(newEnv) {
+	// 	envName = newEnv;
+	// 	// this.envName = newEnv;
+	// 	// console.log('Environment name set:', envName);
+	// }
+	// get env() {
+	// 	return defaultConfig.envs[envName];
+	// }
 }
 let config = new Config();
 
