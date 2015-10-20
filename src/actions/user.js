@@ -1,4 +1,4 @@
-import config from './config';
+import config from '../config';
 import {has} from 'lodash';
 import request from '../utils/request';
 import logger from '../utils/logger';

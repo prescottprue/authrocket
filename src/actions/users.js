@@ -1,12 +1,11 @@
-// import fetch from 'isomorphic-fetch';
-import config from './config';
+import config from '../config';
 import _ from 'lodash';
 import request from '../utils/request';
 import logger from '../utils/logger';
 
 export default class UsersAction {
   constructor(settings) {
-  
+
   }
   /** Get a list of users
    * @return {Promise}

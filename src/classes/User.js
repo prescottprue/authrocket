@@ -1,5 +1,4 @@
-// import fetch from 'isomorphic-fetch';
-import config from './config';
+import config from '../config';
 import _ from 'lodash';
 import request from '../utils/request';
 import logger from '../utils/logger';
@@ -16,7 +15,7 @@ export default class User {
    * @return {Promise}
    */
   get(userData) {
-    
+
   }
   /** Remove a user
    * @param {Object} userData - Object containing data to signup with
