@@ -3,6 +3,8 @@ import config from './config';
 import _ from 'lodash';
 import request from './utils/request';
 import logger from './utils/logger';
+import UsersAction from './actions/users';
+import UserAction from './actions/user';
 
 export default class AuthRocket {
   constructor(settings) {
@@ -20,7 +22,6 @@ export default class AuthRocket {
    * @return {Promise}
    */
   login(loginData) {
-
     return request.post(`${config.urls.js}/login`, loginData).then((res) => {
       logger.log({description: 'successful login', res: res});
       if (_.has(res, 'error')) {
@@ -88,12 +89,30 @@ export default class AuthRocket {
       return Promise.reject(err);
     });
   }
-  /** Attach AuthRocket request headers and make a request
-   * @param {String} endpoint - Endpoint to send request to
-   * @param {Object|String} data - Request data
-   * @return {Promise}
-   */
-   requestWithHeaders(url, data) {
 
-   }
+ /** Users action namespace
+  * @example
+  * //Get users list
+  * authrocket.Users.get().then(function(loadedUser){
+  *  console.log('User found:', loadedUser);
+  * });
+  */
+  get Users(){
+    return new UsersAction();
+  }
+  /** User action namespace
+   * @param {Object|String} userData - Object or string data used to identify user. Can be username or email as a string or within the object as parameters.
+   * @example
+   * //Get user by email
+   * authrocket.User('test@test.com').get().then(function(loadedUser){
+   *  console.log('User found:', loadedUser);
+   * });
+   * //Equivalent get request using object instead of string
+   * authrocket.User({email: 'test@test.com'}).get().then(function(loadedUser){
+   *  console.log('User found:', loadedUser);
+   * });
+   */
+  User(userData){
+    return new UserAction(userData);
+  }
 }

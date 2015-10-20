@@ -1,6 +1,7 @@
 import config from '../config';
 import logger from './logger';
 import superagent from 'superagent';
+import {each, keys} from 'lodash';
 
 let request = {
 	get(endpoint, queryData) {
@@ -25,7 +26,15 @@ let request = {
 		var req = superagent.put(endpoint, data);
 		// req = addAuthHeader(req);
 		return handleResponse(req);
-	}
+	},
+	/** Attach AuthRocket request headers and make a request
+	 * @param {String} endpoint - Endpoint to send request to
+	 * @param {Object|String} data - Request data
+	 * @return {Promise}
+	 */
+	 postWithHeaders(url, data) {
+
+	 }
 };
 
 export default request;
@@ -51,16 +60,24 @@ function handleResponse(req) {
 	});
 }
 //Add auth rocket headers to request
-function addAuthRocketHeaders() {
+function addAuthRocketHeaders(req) {
 	//TODO: Make this work
   let headers = {
-       'X-Authrocket-Account': config.accountId,
-       'X-Authrocket-Api-Key': config.apiKey,
-       'X-Authrocket-Realm': config.realmId,
-       'Accept': 'application/json',
-       'Content-Type': 'application/json',
-       'User-agent': 'https://github.com/prescottprue/authrocket'
-   };
+    'X-Authrocket-Account': config.accountId,
+    'X-Authrocket-Api-Key': config.apiKey,
+    'X-Authrocket-Realm': config.realmId,
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+    'User-agent': 'https://github.com/prescottprue/authrocket' //To provide AuthRocket a contact
+  };
+	//Add each header to the request
+	each(keys(headers), (key) => {
+		req = addHeaderToReq(key, headers[key]);
+	});
+}
+//Add header to an existing request
+function addHeaderToReq(req, headerName, headerVal){
+	return req.set(headerName, headerVal);
 }
 //Add token to Authorization header if it exists
 function addAuthHeader(req) {

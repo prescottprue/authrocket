@@ -4,14 +4,9 @@ import _ from 'lodash';
 import request from '../utils/request';
 import logger from '../utils/logger';
 
-export default class Users {
+export default class UsersAction {
   constructor(settings) {
-    if (settings && _.isString(settings)) {
-      this.apiUrl = settings;
-    } else {
-      //Set api url if within settings
-      config.applySettings(settings);
-    }
+  
   }
   /** Get a list of users
    * @return {Promise}
