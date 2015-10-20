@@ -1,4 +1,9 @@
-var authrocket = new AuthRocket({jsUrl: 'https://tessellate.e1.loginrocket.com/v1/'});
+var authrocket = new AuthRocket({
+  jsUrl: 'https://tessellate.e1.loginrocket.com/v1/',
+  accountId: 'org_0vFdP9Zc11Y7yucwRTSCg8',
+  apiKey: 'key_AAAe02TUpGzBNgkrLkXYi6j57tmaiU0ll27NEvDRjBq',
+  realmId: 'rl_0vFhopfukY34r8EPGmKVpb'
+});
 console.log('authrocket:', authrocket);
 //Set logged in status when dom is loaded
 document.addEventListener("DOMContentLoaded", function(event) {
@@ -56,5 +61,11 @@ function signup(signupData){
   }, function(err){
     console.error('logout() : Error signing up:', err);
   });
-
+}
+function getUsers(){
+  authrocket.Users.get().then(function(usersList){
+    console.log('users loaded', usersList);
+  }, function(err){
+    console.error('error getting users', err);
+  });
 }

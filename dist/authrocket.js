@@ -209,7 +209,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
    * @param {Object|String} data - Request data
    * @return {Promise}
    */
-		postWithHeaders: function postWithHeaders(url, data) {}
+		withHeaders: function withHeaders(type, url, data) {
+			var req = superagent[type](url);
+			req = addAuthRocketHeaders(req);
+			return handleResponse(req);
+		}
 	};
 
 	//Wrap response in promise that has error handling
@@ -231,6 +235,36 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				}
 			});
 		});
+	}
+	//Add auth rocket headers to request
+	function addAuthRocketHeaders(req) {
+		var newReq = req;
+		//TODO: Make this work
+		if (!config.accountId || !config.apiKey || !config.realmId) {
+			_logger.error({ description: 'AccountId, apiKey, and realmId are required.' });
+			return;
+		}
+		var headers = {
+			'X-Authrocket-Account': config.accountId,
+			'X-Authrocket-Api-Key': config.apiKey,
+			'X-Authrocket-Realm': config.realmId,
+			'Accept': 'application/json',
+			'Content-Type': 'application/json'
+			// 'User-agent': 'https://github.com/prescottprue/authrocket' //To provide AuthRocket a contact
+		};
+		//Add each header to the request
+		_.each(_.keys(headers), function (key) {
+			newReq = addHeaderToReq(req, key, headers[key]);
+		});
+		return newReq;
+	}
+	//Add header to an existing request
+	function addHeaderToReq(req, headerName, headerVal) {
+		if (!headerName || !headerVal) {
+			_logger.error({ description: 'Header name and value required to add header to request.', func: 'addHeaderToReq', obj: 'request' });
+			return;
+		}
+		return req.set(headerName, headerVal);
 	}
 
 	var UserAction = (function () {
@@ -303,15 +337,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 		_createClass(UsersAction, [{
 			key: 'get',
 			value: function get() {
-				return request.get(config.urls.api + '/users').then(function (res) {
-					_logger.log({ description: 'successful login', res: res });
+				return request.withHeaders('get', config.urls.api + '/users').then(function (res) {
+					_logger.log({ description: 'Users list loaded successfully.', res: res, func: 'get', obj: 'UsersAction' });
 					if (___default.has(res, 'error')) {
 						_logger.error({ description: 'Error signing up.', error: res.error, res: res, func: 'signup', obj: 'Users' });
 						return Promise.reject(res.error);
 					}
-					return res;
+					return res.collection ? res.collection : res;
 				}, function (error) {
-					_logger.error({ description: 'Error logging in.', error: error });
+					_logger.error({ description: 'Error getting users/', error: error });
 					return Promise.reject(error);
 				});
 			}

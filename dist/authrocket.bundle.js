@@ -13921,15 +13921,15 @@ var UsersAction = (function () {
   _createClass(UsersAction, [{
     key: 'get',
     value: function get() {
-      return _utilsRequest2['default'].get(_config2['default'].urls.api + '/users').then(function (res) {
-        _utilsLogger2['default'].log({ description: 'successful login', res: res });
+      return _utilsRequest2['default'].withHeaders('get', _config2['default'].urls.api + '/users').then(function (res) {
+        _utilsLogger2['default'].log({ description: 'Users list loaded successfully.', res: res, func: 'get', obj: 'UsersAction' });
         if (_lodash2['default'].has(res, 'error')) {
           _utilsLogger2['default'].error({ description: 'Error signing up.', error: res.error, res: res, func: 'signup', obj: 'Users' });
           return Promise.reject(res.error);
         }
-        return res;
+        return res.collection ? res.collection : res;
       }, function (error) {
-        _utilsLogger2['default'].error({ description: 'Error logging in.', error: error });
+        _utilsLogger2['default'].error({ description: 'Error getting users/', error: error });
         return Promise.reject(error);
       });
     }
@@ -14389,7 +14389,11 @@ var request = {
   * @param {Object|String} data - Request data
   * @return {Promise}
   */
-	postWithHeaders: function postWithHeaders(url, data) {}
+	withHeaders: function withHeaders(type, url, data) {
+		var req = _superagent2['default'][type](url);
+		req = addAuthRocketHeaders(req);
+		return handleResponse(req);
+	}
 };
 
 exports['default'] = request;
@@ -14416,22 +14420,32 @@ function handleResponse(req) {
 }
 //Add auth rocket headers to request
 function addAuthRocketHeaders(req) {
+	var newReq = req;
 	//TODO: Make this work
+	if (!_config2['default'].accountId || !_config2['default'].apiKey || !_config2['default'].realmId) {
+		_logger2['default'].error({ description: 'AccountId, apiKey, and realmId are required.' });
+		return;
+	}
 	var headers = {
 		'X-Authrocket-Account': _config2['default'].accountId,
 		'X-Authrocket-Api-Key': _config2['default'].apiKey,
 		'X-Authrocket-Realm': _config2['default'].realmId,
 		'Accept': 'application/json',
-		'Content-Type': 'application/json',
-		'User-agent': 'https://github.com/prescottprue/authrocket' //To provide AuthRocket a contact
+		'Content-Type': 'application/json'
+		// 'User-agent': 'https://github.com/prescottprue/authrocket' //To provide AuthRocket a contact
 	};
 	//Add each header to the request
 	(0, _lodash.each)((0, _lodash.keys)(headers), function (key) {
-		req = addHeaderToReq(key, headers[key]);
+		newReq = addHeaderToReq(req, key, headers[key]);
 	});
+	return newReq;
 }
 //Add header to an existing request
 function addHeaderToReq(req, headerName, headerVal) {
+	if (!headerName || !headerVal) {
+		_logger2['default'].error({ description: 'Header name and value required to add header to request.', func: 'addHeaderToReq', obj: 'request' });
+		return;
+	}
 	return req.set(headerName, headerVal);
 }
 //Add token to Authorization header if it exists

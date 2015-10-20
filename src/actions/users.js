@@ -11,15 +11,15 @@ export default class UsersAction {
    * @return {Promise}
    */
   get() {
-    return request.get(`${config.urls.api}/users`).then((res) => {
-      logger.log({description: 'successful login', res: res});
+    return request.withHeaders('get', `${config.urls.api}/users`).then((res) => {
+      logger.log({description: 'Users list loaded successfully.', res: res, func: 'get', obj: 'UsersAction'});
       if (_.has(res, 'error')) {
         logger.error({description: 'Error signing up.', error: res.error, res: res, func: 'signup', obj: 'Users'});
         return Promise.reject(res.error);
       }
-      return res;
+      return res.collection ? res.collection : res;
     }, (error) => {
-      logger.error({description: 'Error logging in.', error: error});
+      logger.error({description: 'Error getting users/', error: error});
       return Promise.reject(error);
     });
   }
