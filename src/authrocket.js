@@ -97,7 +97,7 @@ export default class AuthRocket {
   *  console.log('User found:', loadedUser);
   * });
   */
-  get Users(){
+  get Users() {
     return new UsersAction();
   }
   /** User action namespace
@@ -112,7 +112,7 @@ export default class AuthRocket {
    *  console.log('User found:', loadedUser);
    * });
    */
-  User(userData){
+  User(userData) {
     return new UserAction(userData);
   }
 }

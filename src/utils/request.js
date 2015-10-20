@@ -76,7 +76,7 @@ function addAuthRocketHeaders(req) {
 	});
 }
 //Add header to an existing request
-function addHeaderToReq(req, headerName, headerVal){
+function addHeaderToReq(req, headerName, headerVal) {
 	return req.set(headerName, headerVal);
 }
 //Add token to Authorization header if it exists

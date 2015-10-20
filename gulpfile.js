@@ -11,6 +11,7 @@ const babelify = require('babelify');
 const watchify = require('watchify');
 const buffer = require('vinyl-buffer');
 const rollup = require('rollup');
+const browserify = require('browserify');
 const runSequence = require('run-sequence');
 const source = require('vinyl-source-stream');
 const awspublish = require('gulp-awspublish');
@@ -65,11 +66,20 @@ gulp.task('build:main', ['lint-src', 'clean'], function (done) {
   })
   .catch(done);
 });
+//Build bundle version
+gulp.task('build:bundle', function (callback) {
+  runSequence('addExternals', callback);
+});
 
 // Ensure that linting occurs before browserify runs. This prevents
 // the build from breaking due to poorly formatted code.
 gulp.task('build', function (callback) {
-  runSequence(['lint-src', 'lint-test'], 'test', 'build:main', 'watch', callback);
+  runSequence(['lint-src', 'lint-test'], 'build:main', 'build:bundle', 'watch', callback);//'test',
+});
+
+//Browserify with external modules included
+gulp.task('addExternals', function() {
+  return bundle(browserifyAndWatchBundler());
 });
 
 //Run test once using Karma and exit

@@ -27,7 +27,10 @@ module.exports = function(config) {
     },
     browserify : {
       debug: true,
-      transform: ['babelify',['browserify-istanbul', {instrumenter: require('isparta')}]]
+      transform: [
+        ['babelify', { optional: ['es7.asyncFunctions'] }],
+        ['browserify-istanbul', {instrumenter: require('isparta')}]
+      ]
     },
     // test results reporter to use
     // possible values: 'dots', 'progress'
