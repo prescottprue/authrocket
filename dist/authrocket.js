@@ -14,93 +14,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 	var ___default = 'default' in _ ? _['default'] : _;
 	superagent = 'default' in superagent ? superagent['default'] : superagent;
 
-	var Actions = Object.defineProperties({}, {
-		Realms: {
-			get: function get() {
-				return Realms;
-			},
-			configurable: true,
-			enumerable: true
-		},
-		Users: {
-			get: function get() {
-				return Users;
-			},
-			configurable: true,
-			enumerable: true
-		},
-		Credentials: {
-			get: function get() {
-				return Credentials;
-			},
-			configurable: true,
-			enumerable: true
-		},
-		SignupTokens: {
-			get: function get() {
-				return SignupTokens;
-			},
-			configurable: true,
-			enumerable: true
-		},
-		Orgs: {
-			get: function get() {
-				return Orgs;
-			},
-			configurable: true,
-			enumerable: true
-		},
-		Memberships: {
-			get: function get() {
-				return Memberships;
-			},
-			configurable: true,
-			enumerable: true
-		},
-		AuthProviders: {
-			get: function get() {
-				return AuthProviders;
-			},
-			configurable: true,
-			enumerable: true
-		},
-		ConnectedApps: {
-			get: function get() {
-				return ConnectedApps;
-			},
-			configurable: true,
-			enumerable: true
-		},
-		Hooks: {
-			get: function get() {
-				return Hooks;
-			},
-			configurable: true,
-			enumerable: true
-		},
-		Sessions: {
-			get: function get() {
-				return Sessions;
-			},
-			configurable: true,
-			enumerable: true
-		},
-		Events: {
-			get: function get() {
-				return Events;
-			},
-			configurable: true,
-			enumerable: true
-		},
-		Notifications: {
-			get: function get() {
-				return Notifications;
-			},
-			configurable: true,
-			enumerable: true
-		}
-	});
-
 	var defaultConfig = {
 		accountId: process.env.AUTHROCKET_ACCOUNT_ID,
 		apiKey: process.env.AUTHROCKET_API_KEY,
@@ -176,7 +89,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 	if (config.logLevel) {
 		logLevel = config.logLevel;
 	}
-	var _logger = {
+	var logger$1 = {
 		log: function log(logData) {
 			var msgArgs = buildMessageArgs(logData);
 			if (config.envName == 'production') {
@@ -316,12 +229,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					return resolve(res.body);
 				} else {
 					if (err.status == 401) {
-						_logger.warn({ description: 'Unauthorized. You must be signed into make this request.', func: 'handleResponse' });
+						logger$1.warn({ description: 'Unauthorized. You must be signed into make this request.', func: 'handleResponse' });
 					}
 					if (err && err.response) {
 						return reject(err.response.text);
 					}
-					_logger.warn({ description: 'Error response.', error: err, func: 'handleResponse' });
+					logger$1.warn({ description: 'Error response.', error: err, func: 'handleResponse' });
 					return reject(err);
 				}
 			});
@@ -333,7 +246,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 		//TODO: Make this work
 		if (!config.accountId || !config.apiKey || !config.realmId) {
-			_logger.error({ description: 'AccountId, apiKey, and realmId are required.' });
+			logger$1.error({ description: 'AccountId, apiKey, and realmId are required.' });
 			return req;
 		}
 		var headers = {
@@ -344,23 +257,23 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 			'Content-Type': 'application/json'
 			// 'User-agent': 'https://github.com/prescottprue/authrocket' //To provide AuthRocket a contact
 		};
-		_logger.log({ description: 'addAuthRocketHeaders called.', config: config });
+		logger$1.log({ description: 'addAuthRocketHeaders called.', config: config });
 
 		//Add each header to the request
 		_.each(_.keys(headers), function (key) {
 			newReq = addHeaderToReq(req, key, headers[key]);
 		});
-		_logger.log({ description: 'addAuthRocketHeaders request created.', request: newReq });
+		logger$1.log({ description: 'addAuthRocketHeaders request created.', request: newReq });
 
 		return newReq;
 	}
 	//Add header to an existing request
 	function addHeaderToReq(req, headerName, headerVal) {
 		if (!headerName || !headerVal) {
-			_logger.error({ description: 'Header name and value required to add header to request.', func: 'addHeaderToReq', obj: 'request' });
+			logger$1.error({ description: 'Header name and value required to add header to request.', func: 'addHeaderToReq', obj: 'request' });
 			return;
 		}
-		_logger.log({ description: 'Header value set.', headerName: headerName, headerVal: headerVal });
+		logger$1.log({ description: 'Header value set.', headerName: headerName, headerVal: headerVal });
 		return req.set(headerName, headerVal);
 	}
 
@@ -376,7 +289,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 		_createClass(Action, [{
 			key: 'init',
 			value: function init(actionData) {
-				_logger.log({ description: 'Init action called.', actionData: actionData, func: 'url', obj: 'Action' });
+				logger$1.log({ description: 'Init action called.', actionData: actionData, func: 'url', obj: 'Action' });
 				this.isList = actionData ? false : true;
 				if (!this.isList) {
 					this.actionData = actionData;
@@ -387,7 +300,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 						//Check for object to have id or username
 						this.id = actionData.id ? actionData.id : actionData.username;
 					} else {
-						_logger.warn({ description: 'Invalid action data object.', func: 'constructor', obj: 'Action' });
+						logger$1.warn({ description: 'Invalid action data object.', func: 'constructor', obj: 'Action' });
 						this.isList = false;
 						// return Promise.reject('Invalid this.actionData');
 					}
@@ -401,14 +314,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     */
 			value: function get() {
 				return request.get(this.url).then(function (res) {
-					_logger.log({ description: 'Get responded successfully.', res: res, func: 'get', obj: 'Action' });
+					logger$1.log({ description: 'Get responded successfully.', res: res, func: 'get', obj: 'Action' });
 					if (_.has(res, 'error')) {
-						_logger.error({ description: 'Error in get response.', error: res.error, res: res, func: 'get', obj: 'Action' });
+						logger$1.error({ description: 'Error in get response.', error: res.error, res: res, func: 'get', obj: 'Action' });
 						return Promise.reject(res.error);
 					}
 					return res.collection ? res.collection : res;
 				}, function (error) {
-					_logger.error({ description: 'Error in GET request.', error: error, func: 'get', obj: 'Action' });
+					logger$1.error({ description: 'Error in GET request.', error: error, func: 'get', obj: 'Action' });
 					return Promise.reject(error);
 				});
 			}
@@ -421,15 +334,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 			key: 'add',
 			value: function add(newData) {
 				return request.post(this.url, newData).then(function (res) {
-					_logger.log({ description: 'Add request responded successfully.', res: res, func: 'add', obj: 'Action' });
+					logger$1.log({ description: 'Add request responded successfully.', res: res, func: 'add', obj: 'Action' });
 					if (_.has(res, 'error')) {
-						_logger.error({ description: 'Error creating new user.', error: res.error, res: res, func: 'add', obj: 'Action' });
+						logger$1.error({ description: 'Error creating new user.', error: res.error, res: res, func: 'add', obj: 'Action' });
 						return Promise.reject(res.error);
 					}
-					_logger.log({ description: 'Add successful.', res: res, func: 'add', obj: 'Action' });
+					logger$1.log({ description: 'Add successful.', res: res, func: 'add', obj: 'Action' });
 					return res;
 				}, function (err) {
-					_logger.error({ description: 'Error creating new user.', error: err, func: 'add', obj: 'Action' });
+					logger$1.error({ description: 'Error creating new user.', error: err, func: 'add', obj: 'Action' });
 					return Promise.reject(err);
 				});
 			}
@@ -438,13 +351,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 			value: function update(updateData) {
 				return request.put(this.url, updateData).then(function (res) {
 					if (_.has(res, 'error')) {
-						_logger.error({ description: 'Error in update request.', error: res.error, res: res, func: 'update', obj: 'Action' });
+						logger$1.error({ description: 'Error in update request.', error: res.error, res: res, func: 'update', obj: 'Action' });
 						return Promise.reject(res.error);
 					}
-					_logger.log({ description: 'Update successful.', res: res, func: 'update', obj: 'Action' });
+					logger$1.log({ description: 'Update successful.', res: res, func: 'update', obj: 'Action' });
 					return res;
 				}, function (err) {
-					_logger.error({ description: 'Error in update request.', error: err, func: 'update', obj: 'Action' });
+					logger$1.error({ description: 'Error in update request.', error: err, func: 'update', obj: 'Action' });
 					return Promise.reject(err);
 				});
 			}
@@ -457,13 +370,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 			value: function remove() {
 				return request.del(this.url).then(function (res) {
 					if (_.has(res, 'error')) {
-						_logger.error({ description: 'Error in request for removal.', error: res.error, res: res, func: 'remove', obj: 'Action' });
+						logger$1.error({ description: 'Error in request for removal.', error: res.error, res: res, func: 'remove', obj: 'Action' });
 						return Promise.reject(res.error);
 					}
-					_logger.log({ description: 'Remove successfully.', res: res, func: 'remove', obj: 'Action' });
+					logger$1.log({ description: 'Remove successfully.', res: res, func: 'remove', obj: 'Action' });
 					return res;
 				}, function (err) {
-					_logger.error({ description: 'Error in request for removal.', error: err, func: 'remove', obj: 'Action' });
+					logger$1.error({ description: 'Error in request for removal.', error: err, func: 'remove', obj: 'Action' });
 					return Promise.reject(err);
 				});
 			}
@@ -471,7 +384,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 			key: 'url',
 			get: function get() {
 				var url = this.isList ? config.urls.api + '/' + this.endpoint : config.urls.api + '/' + this.endpoint + '/' + this.id;
-				_logger.log({ description: 'Url created.', url: url, func: 'url', obj: 'Action' });
+				logger$1.log({ description: 'Url created.', url: url, func: 'url', obj: 'Action' });
 				return url;
 			}
 		}]);
@@ -479,149 +392,164 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 		return Action;
 	})();
 
-	var Realms = (function (_Action) {
-		_inherits(Realms, _Action);
+	var _Realms = (function (_Action) {
+		_inherits(_Realms, _Action);
 
-		function Realms(actionData) {
-			_classCallCheck(this, Realms);
+		function _Realms(actionData) {
+			_classCallCheck(this, _Realms);
 
-			_get(Object.getPrototypeOf(Realms.prototype), 'constructor', this).call(this, 'realms', actionData);
+			_get(Object.getPrototypeOf(_Realms.prototype), 'constructor', this).call(this, 'realms', actionData);
 		}
 
-		return Realms;
+		return _Realms;
 	})(Action);
 
-	var Users = (function (_Action2) {
-		_inherits(Users, _Action2);
+	var _Users = (function (_Action2) {
+		_inherits(_Users, _Action2);
 
-		function Users(actionData) {
-			_classCallCheck(this, Users);
+		function _Users(actionData) {
+			_classCallCheck(this, _Users);
 
-			_get(Object.getPrototypeOf(Users.prototype), 'constructor', this).call(this, 'users', actionData);
+			_get(Object.getPrototypeOf(_Users.prototype), 'constructor', this).call(this, 'users', actionData);
 		}
 
-		return Users;
+		return _Users;
 	})(Action);
 
-	var Credentials = (function (_Action3) {
-		_inherits(Credentials, _Action3);
+	var _Credentials = (function (_Action3) {
+		_inherits(_Credentials, _Action3);
 
-		function Credentials(actionData) {
-			_classCallCheck(this, Credentials);
+		function _Credentials(actionData) {
+			_classCallCheck(this, _Credentials);
 
-			_get(Object.getPrototypeOf(Credentials.prototype), 'constructor', this).call(this, 'credentials', actionData);
+			_get(Object.getPrototypeOf(_Credentials.prototype), 'constructor', this).call(this, 'credentials', actionData);
 		}
 
-		return Credentials;
+		return _Credentials;
 	})(Action);
 
-	var SignupTokens = (function (_Action4) {
-		_inherits(SignupTokens, _Action4);
+	var _SignupTokens = (function (_Action4) {
+		_inherits(_SignupTokens, _Action4);
 
-		function SignupTokens(actionData) {
-			_classCallCheck(this, SignupTokens);
+		function _SignupTokens(actionData) {
+			_classCallCheck(this, _SignupTokens);
 
-			_get(Object.getPrototypeOf(SignupTokens.prototype), 'constructor', this).call(this, 'signup_tokens', actionData);
+			_get(Object.getPrototypeOf(_SignupTokens.prototype), 'constructor', this).call(this, 'signup_tokens', actionData);
 		}
 
-		return SignupTokens;
+		return _SignupTokens;
 	})(Action);
 
-	var Orgs = (function (_Action5) {
-		_inherits(Orgs, _Action5);
+	var _Orgs = (function (_Action5) {
+		_inherits(_Orgs, _Action5);
 
-		function Orgs(actionData) {
-			_classCallCheck(this, Orgs);
+		function _Orgs(actionData) {
+			_classCallCheck(this, _Orgs);
 
-			_get(Object.getPrototypeOf(Orgs.prototype), 'constructor', this).call(this, 'orgs', actionData);
+			_get(Object.getPrototypeOf(_Orgs.prototype), 'constructor', this).call(this, 'orgs', actionData);
 		}
 
-		return Orgs;
+		return _Orgs;
 	})(Action);
 
-	var Memberships = (function (_Action6) {
-		_inherits(Memberships, _Action6);
+	var _Memberships = (function (_Action6) {
+		_inherits(_Memberships, _Action6);
 
-		function Memberships(actionData) {
-			_classCallCheck(this, Memberships);
+		function _Memberships(actionData) {
+			_classCallCheck(this, _Memberships);
 
-			_get(Object.getPrototypeOf(Memberships.prototype), 'constructor', this).call(this, 'memberships', actionData);
+			_get(Object.getPrototypeOf(_Memberships.prototype), 'constructor', this).call(this, 'memberships', actionData);
 		}
 
-		return Memberships;
+		return _Memberships;
 	})(Action);
 
-	var AuthProviders = (function (_Action7) {
-		_inherits(AuthProviders, _Action7);
+	var _AuthProviders = (function (_Action7) {
+		_inherits(_AuthProviders, _Action7);
 
-		function AuthProviders(actionData) {
-			_classCallCheck(this, AuthProviders);
+		function _AuthProviders(actionData) {
+			_classCallCheck(this, _AuthProviders);
 
-			_get(Object.getPrototypeOf(AuthProviders.prototype), 'constructor', this).call(this, 'auth_providers', actionData);
+			_get(Object.getPrototypeOf(_AuthProviders.prototype), 'constructor', this).call(this, 'auth_providers', actionData);
 		}
 
-		return AuthProviders;
+		return _AuthProviders;
 	})(Action);
 
-	var ConnectedApps = (function (_Action8) {
-		_inherits(ConnectedApps, _Action8);
+	var _ConnectedApps = (function (_Action8) {
+		_inherits(_ConnectedApps, _Action8);
 
-		function ConnectedApps(actionData) {
-			_classCallCheck(this, ConnectedApps);
+		function _ConnectedApps(actionData) {
+			_classCallCheck(this, _ConnectedApps);
 
-			_get(Object.getPrototypeOf(ConnectedApps.prototype), 'constructor', this).call(this, 'login_policies', actionData);
+			_get(Object.getPrototypeOf(_ConnectedApps.prototype), 'constructor', this).call(this, 'login_policies', actionData);
 		}
 
-		return ConnectedApps;
+		return _ConnectedApps;
 	})(Action);
 
-	var Hooks = (function (_Action9) {
-		_inherits(Hooks, _Action9);
+	var _Hooks = (function (_Action9) {
+		_inherits(_Hooks, _Action9);
 
-		function Hooks(actionData) {
-			_classCallCheck(this, Hooks);
+		function _Hooks(actionData) {
+			_classCallCheck(this, _Hooks);
 
-			_get(Object.getPrototypeOf(Hooks.prototype), 'constructor', this).call(this, 'app_hooks', actionData);
+			_get(Object.getPrototypeOf(_Hooks.prototype), 'constructor', this).call(this, 'app_hooks', actionData);
 		}
 
-		return Hooks;
+		return _Hooks;
 	})(Action);
 
-	var Sessions = (function (_Action10) {
-		_inherits(Sessions, _Action10);
+	var _Sessions = (function (_Action10) {
+		_inherits(_Sessions, _Action10);
 
-		function Sessions(actionData) {
-			_classCallCheck(this, Sessions);
+		function _Sessions(actionData) {
+			_classCallCheck(this, _Sessions);
 
-			_get(Object.getPrototypeOf(Sessions.prototype), 'constructor', this).call(this, 'session', actionData);
+			_get(Object.getPrototypeOf(_Sessions.prototype), 'constructor', this).call(this, 'session', actionData);
 		}
 
-		return Sessions;
+		return _Sessions;
 	})(Action);
 
-	var Events = (function (_Action11) {
-		_inherits(Events, _Action11);
+	var _Events = (function (_Action11) {
+		_inherits(_Events, _Action11);
 
-		function Events(actionData) {
-			_classCallCheck(this, Events);
+		function _Events(actionData) {
+			_classCallCheck(this, _Events);
 
-			_get(Object.getPrototypeOf(Events.prototype), 'constructor', this).call(this, 'events', actionData);
+			_get(Object.getPrototypeOf(_Events.prototype), 'constructor', this).call(this, 'events', actionData);
 		}
 
-		return Events;
+		return _Events;
 	})(Action);
 
-	var Notifications = (function (_Action12) {
-		_inherits(Notifications, _Action12);
+	var _Notifications = (function (_Action12) {
+		_inherits(_Notifications, _Action12);
 
-		function Notifications(actionData) {
-			_classCallCheck(this, Notifications);
+		function _Notifications(actionData) {
+			_classCallCheck(this, _Notifications);
 
-			_get(Object.getPrototypeOf(Notifications.prototype), 'constructor', this).call(this, 'notifications', actionData);
+			_get(Object.getPrototypeOf(_Notifications.prototype), 'constructor', this).call(this, 'notifications', actionData);
 		}
 
-		return Notifications;
+		return _Notifications;
 	})(Action);
+
+	var Actions = {
+		Realms: _Realms,
+		Users: _Users,
+		Credentials: _Credentials,
+		SignupTokens: _SignupTokens,
+		Orgs: _Orgs,
+		Memberships: _Memberships,
+		AuthProviders: _AuthProviders,
+		ConnectedApps: _ConnectedApps,
+		Hooks: _Hooks,
+		Sessions: _Sessions,
+		Events: _Events,
+		Notifications: _Notifications
+	};
 
 	console.log('actions:', Actions);
 
@@ -648,14 +576,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 			key: 'login',
 			value: function login(loginData) {
 				return request.post(config.urls.js + '/login', loginData).then(function (res) {
-					_logger.log({ description: 'successful login', res: res });
+					logger$1.log({ description: 'successful login', res: res });
 					if (___default.has(res, 'error')) {
-						_logger.error({ description: 'Error signing up.', error: res.error, res: res, func: 'signup', obj: 'AuthRocket' });
+						logger$1.error({ description: 'Error signing up.', error: res.error, res: res, func: 'signup', obj: 'AuthRocket' });
 						return Promise.reject(res.error);
 					}
 					return res;
 				}, function (error) {
-					_logger.error({ description: 'Error logging in.', error: error });
+					logger$1.error({ description: 'Error logging in.', error: error });
 					return Promise.reject(error);
 				});
 			}
@@ -669,14 +597,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 			value: function logout(token) {
 				console.log('config:', config.urls.js);
 				return request.post(config.urls.js + '/logout', { token: token }).then(function (res) {
-					_logger.log({ description: 'successful logout', res: res });
+					logger$1.log({ description: 'successful logout', res: res });
 					if (___default.has(res, 'error')) {
-						_logger.error({ description: 'Error signing up.', error: res.error, res: res, func: 'signup', obj: 'AuthRocket' });
+						logger$1.error({ description: 'Error signing up.', error: res.error, res: res, func: 'signup', obj: 'AuthRocket' });
 						return Promise.reject(res.error);
 					}
 					return res;
 				}, function (err) {
-					_logger.error({ description: 'Error logging out.', error: err });
+					logger$1.error({ description: 'Error logging out.', error: err });
 					return Promise.reject(err);
 				});
 			}
@@ -693,13 +621,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 			value: function signup(signupData) {
 				return request.post(config.urls.js + '/signup', signupData).then(function (res) {
 					if (___default.has(res, 'error')) {
-						_logger.error({ description: 'Error signing up.', error: res.error, res: res, func: 'signup', obj: 'AuthRocket' });
+						logger$1.error({ description: 'Error signing up.', error: res.error, res: res, func: 'signup', obj: 'AuthRocket' });
 						return Promise.reject(res.error);
 					}
-					_logger.log({ description: 'Successful signup', res: res, func: 'signup', obj: 'AuthRocket' });
+					logger$1.log({ description: 'Successful signup', res: res, func: 'signup', obj: 'AuthRocket' });
 					return res;
 				}, function (err) {
-					_logger.error({ description: 'Error signing up.', error: err, func: 'signup', obj: 'AuthRocket' });
+					logger$1.error({ description: 'Error signing up.', error: err, func: 'signup', obj: 'AuthRocket' });
 					return Promise.reject(err);
 				});
 			}
@@ -712,14 +640,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 			key: 'verify',
 			value: function verify(token) {
 				return request.post(config.urls.js + '/sessions/' + token).then(function (res) {
-					_logger.log({ description: 'token is valid', res: res, func: 'verify', obj: 'AuthRocket' });
+					logger$1.log({ description: 'token is valid', res: res, func: 'verify', obj: 'AuthRocket' });
 					if (___default.has(res, 'error')) {
-						_logger.error({ description: 'Error signing up.', error: res.error, res: res, func: 'signup', obj: 'AuthRocket' });
+						logger$1.error({ description: 'Error signing up.', error: res.error, res: res, func: 'signup', obj: 'AuthRocket' });
 						return Promise.reject(res.error);
 					}
 					return res;
 				}, function (err) {
-					_logger.error({ description: 'Token is invalid.', error: err, func: 'verify', obj: 'AuthRocket' });
+					logger$1.error({ description: 'Token is invalid.', error: err, func: 'verify', obj: 'AuthRocket' });
 					return Promise.reject(err);
 				});
 			}
@@ -730,7 +658,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 		}, {
 			key: 'Realms',
 			value: function Realms(actionData) {
-				return new Actions.Realms(actionData);
+				return new _Realms(actionData);
 			}
 
 			/** Users action namespace
@@ -747,7 +675,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 		}, {
 			key: 'Users',
 			value: function Users(actionData) {
-				return new Actions.Users(actionData);
+				return new _Users(actionData);
 			}
 
 			/** Credentials action namespace
@@ -756,7 +684,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 		}, {
 			key: 'Credentials',
 			value: function Credentials(actionData) {
-				return new Actions.Credentials(actionData);
+				return new _Credentials(actionData);
 			}
 
 			/** SignupTokens action namespace
@@ -765,7 +693,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 		}, {
 			key: 'SignupTokens',
 			value: function SignupTokens(actionData) {
-				return new Actions.SignupTokens(actionData);
+				return new _SignupTokens(actionData);
 			}
 
 			/** Orgs action namespace
@@ -774,7 +702,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 		}, {
 			key: 'Orgs',
 			value: function Orgs(actionData) {
-				return new Actions.Orgs(actionData);
+				return new _Orgs(actionData);
 			}
 
 			/** Memberships action namespace
@@ -783,7 +711,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 		}, {
 			key: 'Memberships',
 			value: function Memberships(actionData) {
-				return new Actions.Memberships(actionData);
+				return new _Memberships(actionData);
 			}
 
 			/** AuthProviders action namespace
@@ -792,7 +720,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 		}, {
 			key: 'AuthProviders',
 			value: function AuthProviders(actionData) {
-				return new Actions.AuthProviders(actionData);
+				return new _AuthProviders(actionData);
 			}
 
 			/** ConnectedApps action namespace
@@ -801,7 +729,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 		}, {
 			key: 'ConnectedApps',
 			value: function ConnectedApps(actionData) {
-				return new Actions.ConnectedApps(actionData);
+				return new _ConnectedApps(actionData);
 			}
 
 			/** Hooks action namespace
@@ -810,7 +738,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 		}, {
 			key: 'Hooks',
 			value: function Hooks(actionData) {
-				return new Actions.Hooks(actionData);
+				return new _Hooks(actionData);
 			}
 
 			/** Sessions action namespace
@@ -819,7 +747,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 		}, {
 			key: 'Sessions',
 			value: function Sessions(actionData) {
-				return new Actions.Sessions(actionData);
+				return new _Sessions(actionData);
 			}
 
 			/** Events action namespace
@@ -828,7 +756,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 		}, {
 			key: 'Events',
 			value: function Events(actionData) {
-				return new Actions.Events(actionData);
+				return new _Events(actionData);
 			}
 
 			/** Notifications action namespace
@@ -837,7 +765,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 		}, {
 			key: 'Notifications',
 			value: function Notifications(actionData) {
-				return new Actions.Notifications(actionData);
+				return new _Notifications(actionData);
 			}
 		}]);
 
