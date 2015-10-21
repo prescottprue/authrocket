@@ -1,4 +1,8 @@
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
@@ -9,6 +13,93 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 	var ___default = 'default' in _ ? _['default'] : _;
 	superagent = 'default' in superagent ? superagent['default'] : superagent;
+
+	var Actions = Object.defineProperties({}, {
+		Realms: {
+			get: function get() {
+				return Realms;
+			},
+			configurable: true,
+			enumerable: true
+		},
+		Users: {
+			get: function get() {
+				return Users;
+			},
+			configurable: true,
+			enumerable: true
+		},
+		Credentials: {
+			get: function get() {
+				return Credentials;
+			},
+			configurable: true,
+			enumerable: true
+		},
+		SignupTokens: {
+			get: function get() {
+				return SignupTokens;
+			},
+			configurable: true,
+			enumerable: true
+		},
+		Orgs: {
+			get: function get() {
+				return Orgs;
+			},
+			configurable: true,
+			enumerable: true
+		},
+		Memberships: {
+			get: function get() {
+				return Memberships;
+			},
+			configurable: true,
+			enumerable: true
+		},
+		AuthProviders: {
+			get: function get() {
+				return AuthProviders;
+			},
+			configurable: true,
+			enumerable: true
+		},
+		ConnectedApps: {
+			get: function get() {
+				return ConnectedApps;
+			},
+			configurable: true,
+			enumerable: true
+		},
+		Hooks: {
+			get: function get() {
+				return Hooks;
+			},
+			configurable: true,
+			enumerable: true
+		},
+		Sessions: {
+			get: function get() {
+				return Sessions;
+			},
+			configurable: true,
+			enumerable: true
+		},
+		Events: {
+			get: function get() {
+				return Events;
+			},
+			configurable: true,
+			enumerable: true
+		},
+		Notifications: {
+			get: function get() {
+				return Notifications;
+			},
+			configurable: true,
+			enumerable: true
+		}
+	});
 
 	var defaultConfig = {
 		accountId: process.env.AUTHROCKET_ACCOUNT_ID,
@@ -186,22 +277,22 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 			if (queryData) {
 				req.query(queryData);
 			}
-			// req = addAuthHeader(req);
+			req = addAuthRocketHeaders(req);
 			return handleResponse(req);
 		},
 		post: function post(endpoint, data) {
 			var req = superagent.post(endpoint).send(data);
-			// req = addAuthHeader(req);
+			req = addAuthRocketHeaders(req);
 			return handleResponse(req);
 		},
 		put: function put(endpoint, data) {
 			var req = superagent.put(endpoint, data);
-			// req = addAuthHeader(req);
+			req = addAuthRocketHeaders(req);
 			return handleResponse(req);
 		},
 		del: function del(endpoint, data) {
 			var req = superagent.put(endpoint, data);
-			// req = addAuthHeader(req);
+			req = addAuthRocketHeaders(req);
 			return handleResponse(req);
 		},
 		/** Attach AuthRocket request headers and make a request
@@ -239,23 +330,28 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 	//Add auth rocket headers to request
 	function addAuthRocketHeaders(req) {
 		var newReq = req;
+
 		//TODO: Make this work
 		if (!config.accountId || !config.apiKey || !config.realmId) {
 			_logger.error({ description: 'AccountId, apiKey, and realmId are required.' });
-			return;
+			return req;
 		}
 		var headers = {
 			'X-Authrocket-Account': config.accountId,
 			'X-Authrocket-Api-Key': config.apiKey,
 			'X-Authrocket-Realm': config.realmId,
-			'Accept': 'application/json',
+			// 'Accept': 'application/json',
 			'Content-Type': 'application/json'
 			// 'User-agent': 'https://github.com/prescottprue/authrocket' //To provide AuthRocket a contact
 		};
+		_logger.log({ description: 'addAuthRocketHeaders called.', config: config });
+
 		//Add each header to the request
 		_.each(_.keys(headers), function (key) {
 			newReq = addHeaderToReq(req, key, headers[key]);
 		});
+		_logger.log({ description: 'addAuthRocketHeaders request created.', request: newReq });
+
 		return newReq;
 	}
 	//Add header to an existing request
@@ -264,115 +360,270 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 			_logger.error({ description: 'Header name and value required to add header to request.', func: 'addHeaderToReq', obj: 'request' });
 			return;
 		}
+		_logger.log({ description: 'Header value set.', headerName: headerName, headerVal: headerVal });
 		return req.set(headerName, headerVal);
 	}
 
-	var UserAction = (function () {
-		function UserAction(settings) {
-			_classCallCheck(this, UserAction);
+	var Action = (function () {
+		function Action(actionName, actionData, endpoint) {
+			_classCallCheck(this, Action);
+
+			this.name = actionName;
+			this.endpoint = endpoint ? endpoint : '' + this.name;
+			this.init(actionData);
 		}
 
-		/** Get a specific user
-   * @param {Object} userData - Object containing data to signup with
-   * @param {String} userData.email - Email of new user
-   * @param {String} userData.username - Username of new user
-   * @param {String} userData.password - Password of new user
-   * @return {Promise}
-   */
-
-		_createClass(UserAction, [{
-			key: 'get',
-			value: function get(userData) {
-				//TODO: Handle userData not having username
-				return request.get(config.urls.api + '/users/' + userData.username, loginData).then(function (res) {
-					_logger.log({ description: 'successful login', res: res });
-					if (_.has(res, 'error')) {
-						_logger.error({ description: 'Error signing up.', error: res.error, res: res, func: 'signup', obj: 'AuthRocket' });
-						return Promise.reject(res.error);
+		_createClass(Action, [{
+			key: 'init',
+			value: function init(actionData) {
+				_logger.log({ description: 'Init action called.', actionData: actionData, func: 'url', obj: 'Action' });
+				this.isList = actionData ? false : true;
+				if (!this.isList) {
+					this.actionData = actionData;
+					if (_.isString(actionData)) {
+						//String username provided
+						this.id = this.actionData;
+					} else if (_.has(actionData, 'id') || _.has(actionData, 'username')) {
+						//Check for object to have id or username
+						this.id = actionData.id ? actionData.id : actionData.username;
+					} else {
+						_logger.warn({ description: 'Invalid action data object.', func: 'constructor', obj: 'Action' });
+						this.isList = false;
+						// return Promise.reject('Invalid this.actionData');
 					}
-					return res;
-				}, function (error) {
-					_logger.error({ description: 'Error logging in.', error: error });
-					return Promise.reject(error);
-				});
+				}
 			}
+		}, {
+			key: 'get',
 
-			/** Remove a user
-    * @param {Object} userData - Object containing data to signup with
-    * @param {String} userData.email - Email of new user
-    * @param {String} userData.password - Password of new user
-    * @param {String} userData.confirm - Object containing data to signup with
+			/** Get
     * @return {Promise}
     */
-		}, {
-			key: 'remove',
-			value: function remove(userData) {
-				//TODO: Handle userData not having username
-				return request.del(config.urls.api + '/users/' + userData.username, userData).then(function (res) {
-					if (_.has(res, 'error')) {
-						_logger.error({ description: 'Error removing user.', error: res.error, res: res, func: 'signup', obj: 'AuthRocket' });
-						return Promise.reject(res.error);
-					}
-					_logger.log({ description: 'User removed successfully.', res: res, func: 'signup', obj: 'AuthRocket' });
-					return res;
-				}, function (err) {
-					_logger.error({ description: 'Error removing user.', error: err, func: 'signup', obj: 'AuthRocket' });
-					return Promise.reject(err);
-				});
-			}
-		}]);
-
-		return UserAction;
-	})();
-
-	var UsersAction = (function () {
-		function UsersAction(settings) {
-			_classCallCheck(this, UsersAction);
-		}
-
-		/** Get a list of users
-   * @return {Promise}
-   */
-
-		_createClass(UsersAction, [{
-			key: 'get',
 			value: function get() {
-				return request.withHeaders('get', config.urls.api + '/users').then(function (res) {
-					_logger.log({ description: 'Users list loaded successfully.', res: res, func: 'get', obj: 'UsersAction' });
-					if (___default.has(res, 'error')) {
-						_logger.error({ description: 'Error signing up.', error: res.error, res: res, func: 'signup', obj: 'Users' });
+				return request.get(this.url).then(function (res) {
+					_logger.log({ description: 'Get responded successfully.', res: res, func: 'get', obj: 'Action' });
+					if (_.has(res, 'error')) {
+						_logger.error({ description: 'Error in get response.', error: res.error, res: res, func: 'get', obj: 'Action' });
 						return Promise.reject(res.error);
 					}
 					return res.collection ? res.collection : res;
 				}, function (error) {
-					_logger.error({ description: 'Error getting users/', error: error });
+					_logger.error({ description: 'Error in GET request.', error: error, func: 'get', obj: 'Action' });
 					return Promise.reject(error);
 				});
 			}
 
 			/** Add a new user
-    * @param {Object} userData - Object containing data to create new user with
+    * @param {Object} newData - Object containing data to create with
     * @return {Promise}
     */
 		}, {
 			key: 'add',
-			value: function add(userData) {
-				return request.post(config.urls.api + '/users', userData).then(function (res) {
-					_logger.log({ description: 'Successful created new user', res: res });
-					if (___default.has(res, 'error')) {
-						_logger.error({ description: 'Error creating new user.', error: res.error, res: res, func: 'signup', obj: 'Users' });
+			value: function add(newData) {
+				return request.post(this.url, newData).then(function (res) {
+					_logger.log({ description: 'Add request responded successfully.', res: res, func: 'add', obj: 'Action' });
+					if (_.has(res, 'error')) {
+						_logger.error({ description: 'Error creating new user.', error: res.error, res: res, func: 'add', obj: 'Action' });
 						return Promise.reject(res.error);
 					}
+					_logger.log({ description: 'Add successful.', res: res, func: 'add', obj: 'Action' });
 					return res;
 				}, function (err) {
-					_logger.error({ description: 'Error creating new user.', error: err });
+					_logger.error({ description: 'Error creating new user.', error: err, func: 'add', obj: 'Action' });
 					return Promise.reject(err);
 				});
 			}
+		}, {
+			key: 'update',
+			value: function update(updateData) {
+				return request.put(this.url, updateData).then(function (res) {
+					if (_.has(res, 'error')) {
+						_logger.error({ description: 'Error in update request.', error: res.error, res: res, func: 'update', obj: 'Action' });
+						return Promise.reject(res.error);
+					}
+					_logger.log({ description: 'Update successful.', res: res, func: 'update', obj: 'Action' });
+					return res;
+				}, function (err) {
+					_logger.error({ description: 'Error in update request.', error: err, func: 'update', obj: 'Action' });
+					return Promise.reject(err);
+				});
+			}
+
+			/** Remove
+    * @return {Promise}
+    */
+		}, {
+			key: 'remove',
+			value: function remove() {
+				return request.del(this.url).then(function (res) {
+					if (_.has(res, 'error')) {
+						_logger.error({ description: 'Error in request for removal.', error: res.error, res: res, func: 'remove', obj: 'Action' });
+						return Promise.reject(res.error);
+					}
+					_logger.log({ description: 'Remove successfully.', res: res, func: 'remove', obj: 'Action' });
+					return res;
+				}, function (err) {
+					_logger.error({ description: 'Error in request for removal.', error: err, func: 'remove', obj: 'Action' });
+					return Promise.reject(err);
+				});
+			}
+		}, {
+			key: 'url',
+			get: function get() {
+				var url = this.isList ? config.urls.api + '/' + this.endpoint : config.urls.api + '/' + this.endpoint + '/' + this.id;
+				_logger.log({ description: 'Url created.', url: url, func: 'url', obj: 'Action' });
+				return url;
+			}
 		}]);
 
-		return UsersAction;
+		return Action;
 	})();
+
+	var Realms = (function (_Action) {
+		_inherits(Realms, _Action);
+
+		function Realms(actionData) {
+			_classCallCheck(this, Realms);
+
+			_get(Object.getPrototypeOf(Realms.prototype), 'constructor', this).call(this, 'realms', actionData);
+		}
+
+		return Realms;
+	})(Action);
+
+	var Users = (function (_Action2) {
+		_inherits(Users, _Action2);
+
+		function Users(actionData) {
+			_classCallCheck(this, Users);
+
+			_get(Object.getPrototypeOf(Users.prototype), 'constructor', this).call(this, 'users', actionData);
+		}
+
+		return Users;
+	})(Action);
+
+	var Credentials = (function (_Action3) {
+		_inherits(Credentials, _Action3);
+
+		function Credentials(actionData) {
+			_classCallCheck(this, Credentials);
+
+			_get(Object.getPrototypeOf(Credentials.prototype), 'constructor', this).call(this, 'credentials', actionData);
+		}
+
+		return Credentials;
+	})(Action);
+
+	var SignupTokens = (function (_Action4) {
+		_inherits(SignupTokens, _Action4);
+
+		function SignupTokens(actionData) {
+			_classCallCheck(this, SignupTokens);
+
+			_get(Object.getPrototypeOf(SignupTokens.prototype), 'constructor', this).call(this, 'signup_tokens', actionData);
+		}
+
+		return SignupTokens;
+	})(Action);
+
+	var Orgs = (function (_Action5) {
+		_inherits(Orgs, _Action5);
+
+		function Orgs(actionData) {
+			_classCallCheck(this, Orgs);
+
+			_get(Object.getPrototypeOf(Orgs.prototype), 'constructor', this).call(this, 'orgs', actionData);
+		}
+
+		return Orgs;
+	})(Action);
+
+	var Memberships = (function (_Action6) {
+		_inherits(Memberships, _Action6);
+
+		function Memberships(actionData) {
+			_classCallCheck(this, Memberships);
+
+			_get(Object.getPrototypeOf(Memberships.prototype), 'constructor', this).call(this, 'memberships', actionData);
+		}
+
+		return Memberships;
+	})(Action);
+
+	var AuthProviders = (function (_Action7) {
+		_inherits(AuthProviders, _Action7);
+
+		function AuthProviders(actionData) {
+			_classCallCheck(this, AuthProviders);
+
+			_get(Object.getPrototypeOf(AuthProviders.prototype), 'constructor', this).call(this, 'auth_providers', actionData);
+		}
+
+		return AuthProviders;
+	})(Action);
+
+	var ConnectedApps = (function (_Action8) {
+		_inherits(ConnectedApps, _Action8);
+
+		function ConnectedApps(actionData) {
+			_classCallCheck(this, ConnectedApps);
+
+			_get(Object.getPrototypeOf(ConnectedApps.prototype), 'constructor', this).call(this, 'login_policies', actionData);
+		}
+
+		return ConnectedApps;
+	})(Action);
+
+	var Hooks = (function (_Action9) {
+		_inherits(Hooks, _Action9);
+
+		function Hooks(actionData) {
+			_classCallCheck(this, Hooks);
+
+			_get(Object.getPrototypeOf(Hooks.prototype), 'constructor', this).call(this, 'app_hooks', actionData);
+		}
+
+		return Hooks;
+	})(Action);
+
+	var Sessions = (function (_Action10) {
+		_inherits(Sessions, _Action10);
+
+		function Sessions(actionData) {
+			_classCallCheck(this, Sessions);
+
+			_get(Object.getPrototypeOf(Sessions.prototype), 'constructor', this).call(this, 'session', actionData);
+		}
+
+		return Sessions;
+	})(Action);
+
+	var Events = (function (_Action11) {
+		_inherits(Events, _Action11);
+
+		function Events(actionData) {
+			_classCallCheck(this, Events);
+
+			_get(Object.getPrototypeOf(Events.prototype), 'constructor', this).call(this, 'events', actionData);
+		}
+
+		return Events;
+	})(Action);
+
+	var Notifications = (function (_Action12) {
+		_inherits(Notifications, _Action12);
+
+		function Notifications(actionData) {
+			_classCallCheck(this, Notifications);
+
+			_get(Object.getPrototypeOf(Notifications.prototype), 'constructor', this).call(this, 'notifications', actionData);
+		}
+
+		return Notifications;
+	})(Action);
+
+	console.log('actions:', Actions);
 
 	var AuthRocket = (function () {
 		function AuthRocket(settings) {
@@ -473,35 +724,120 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				});
 			}
 
+			/** Realms action namespace
+    *
+    */
+		}, {
+			key: 'Realms',
+			value: function Realms(actionData) {
+				return new Actions.Realms(actionData);
+			}
+
 			/** Users action namespace
     * @example
     * //Get users list
-    * authrocket.Users.get().then(function(loadedUser){
+    * authrocket.Users().get().then(function(loadedUser){
+    *  console.log('User found:', loadedUser);
+    * });
+    * //Get user by username
+    * authrocket.User('someguy1').get().then(function(loadedUser){
     *  console.log('User found:', loadedUser);
     * });
     */
-		}, {
-			key: 'User',
-
-			/** User action namespace
-    * @param {Object|String} userData - Object or string data used to identify user. Can be username or email as a string or within the object as parameters.
-    * @example
-    * //Get user by email
-    * authrocket.User('test@test.com').get().then(function(loadedUser){
-    *  console.log('User found:', loadedUser);
-    * });
-    * //Equivalent get request using object instead of string
-    * authrocket.User({email: 'test@test.com'}).get().then(function(loadedUser){
-    *  console.log('User found:', loadedUser);
-    * });
-    */
-			value: function User(userData) {
-				return new UserAction(userData);
-			}
 		}, {
 			key: 'Users',
-			get: function get() {
-				return new UsersAction();
+			value: function Users(actionData) {
+				return new Actions.Users(actionData);
+			}
+
+			/** Credentials action namespace
+    *
+    */
+		}, {
+			key: 'Credentials',
+			value: function Credentials(actionData) {
+				return new Actions.Credentials(actionData);
+			}
+
+			/** SignupTokens action namespace
+    *
+    */
+		}, {
+			key: 'SignupTokens',
+			value: function SignupTokens(actionData) {
+				return new Actions.SignupTokens(actionData);
+			}
+
+			/** Orgs action namespace
+    *
+    */
+		}, {
+			key: 'Orgs',
+			value: function Orgs(actionData) {
+				return new Actions.Orgs(actionData);
+			}
+
+			/** Memberships action namespace
+    *
+    */
+		}, {
+			key: 'Memberships',
+			value: function Memberships(actionData) {
+				return new Actions.Memberships(actionData);
+			}
+
+			/** AuthProviders action namespace
+    *
+    */
+		}, {
+			key: 'AuthProviders',
+			value: function AuthProviders(actionData) {
+				return new Actions.AuthProviders(actionData);
+			}
+
+			/** ConnectedApps action namespace
+    *
+    */
+		}, {
+			key: 'ConnectedApps',
+			value: function ConnectedApps(actionData) {
+				return new Actions.ConnectedApps(actionData);
+			}
+
+			/** Hooks action namespace
+    *
+    */
+		}, {
+			key: 'Hooks',
+			value: function Hooks(actionData) {
+				return new Actions.Hooks(actionData);
+			}
+
+			/** Sessions action namespace
+    *
+    */
+		}, {
+			key: 'Sessions',
+			value: function Sessions(actionData) {
+				return new Actions.Sessions(actionData);
+			}
+
+			/** Events action namespace
+    *
+    */
+		}, {
+			key: 'Events',
+			value: function Events(actionData) {
+				return new Actions.Events(actionData);
+			}
+
+			/** Notifications action namespace
+    *
+    */
+		}, {
+			key: 'Notifications',
+			value: function Notifications(actionData) {
+				return new Actions.Notifications(actionData);
 			}
 		}]);
 

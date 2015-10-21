@@ -3,7 +3,7 @@
   "version": "0.0.3",
   "description": "Library for interfacing with AuthRocket service.",
   "main": "dist/authrocket.js",
-  "jsnext:main": "dist/authrocket.js",
+  "jsnext:main": "src/authrocket.js",
   "babelBoilerplateOptions": {
     "entryFileName": "src/authrocket.js",
     "mainVarName": "AuthRocket",

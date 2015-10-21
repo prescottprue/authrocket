@@ -10,8 +10,9 @@ export default class Action {
     this.init(actionData);
   }
   init(actionData) {
-    this.isList = actionData ? true : false;
-    if (this.isList) {
+    logger.log({description: 'Init action called.', actionData: actionData, func: 'url', obj: 'Action'});
+    this.isList = actionData ? false : true;
+    if (!this.isList) {
       this.actionData = actionData;
       if (isString(actionData)) { //String username provided
         this.id = this.actionData;
@@ -25,7 +26,9 @@ export default class Action {
     }
   }
   get url() {
-    return this.isList ? `${config.urls.api}/${this.endpoint}` : `${config.urls.api}/{this.endpoint}/${this.id}`;
+    let url = this.isList ? `${config.urls.api}/${this.endpoint}` : `${config.urls.api}/${this.endpoint}/${this.id}`;
+    logger.log({description: 'Url created.', url: url, func: 'url', obj: 'Action'});
+    return url;
   }
   /** Get
    * @return {Promise}

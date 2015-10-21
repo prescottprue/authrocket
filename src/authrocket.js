@@ -3,8 +3,8 @@ import config from './config';
 import _ from 'lodash';
 import request from './utils/request';
 import logger from './utils/logger';
-import * from './actions';
-
+import * as Actions from './actions';
+console.log('actions:', Actions);
 export default class AuthRocket {
   constructor(settings) {
     if (settings && _.isString(settings)) {
@@ -92,7 +92,7 @@ export default class AuthRocket {
    *
    */
   Realms(actionData) {
-    return new RealmsAction(actionData);
+    return new Actions.Realms(actionData);
   }
   /** Users action namespace
    * @example
@@ -106,66 +106,66 @@ export default class AuthRocket {
    * });
    */
   Users(actionData) {
-    return new UsersAction(actionData);
+    return new Actions.Users(actionData);
   }
   /** Credentials action namespace
    *
    */
   Credentials(actionData) {
-    return new CredentialsAction(actionData);
+    return new Actions.Credentials(actionData);
   }
   /** SignupTokens action namespace
    *
    */
   SignupTokens(actionData) {
-    return new SignupTokensAction(actionData);
+    return new Actions.SignupTokens(actionData);
   }
   /** Orgs action namespace
    *
    */
   Orgs(actionData) {
-    return new OrgsAction(actionData);
+    return new Actions.Orgs(actionData);
   }
   /** Memberships action namespace
    *
    */
   Memberships(actionData) {
-    return new MembershipsAction(actionData);
+    return new Actions.Memberships(actionData);
   }
   /** AuthProviders action namespace
    *
    */
   AuthProviders(actionData) {
-    return new AuthProvidersAction(actionData);
+    return new Actions.AuthProviders(actionData);
   }
   /** ConnectedApps action namespace
    *
    */
   ConnectedApps(actionData) {
-    return new ConnectedAppsAction(actionData);
+    return new Actions.ConnectedApps(actionData);
   }
   /** Hooks action namespace
    *
    */
   Hooks(actionData) {
-    return new HooksAction(actionData);
+    return new Actions.Hooks(actionData);
   }
   /** Sessions action namespace
    *
    */
   Sessions(actionData) {
-    return new SessionsAction(actionData);
+    return new Actions.Sessions(actionData);
   }
   /** Events action namespace
    *
    */
   Events(actionData) {
-    return new EventsAction(actionData);
+    return new Actions.Events(actionData);
   }
   /** Notifications action namespace
    *
    */
   Notifications(actionData) {
-    return new NotificationsAction(actionData);
+    return new Actions.Notifications(actionData);
   }
 }

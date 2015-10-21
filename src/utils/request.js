@@ -64,23 +64,28 @@ function handleResponse(req) {
 //Add auth rocket headers to request
 function addAuthRocketHeaders(req) {
 	let newReq = req;
+
 	//TODO: Make this work
 	if (!config.accountId || !config.apiKey || !config.realmId) {
-		// logger.error({description: 'AccountId, apiKey, and realmId are required.'});
+		logger.error({description: 'AccountId, apiKey, and realmId are required.'});
 		return req;
 	}
   let headers = {
     'X-Authrocket-Account': config.accountId,
     'X-Authrocket-Api-Key': config.apiKey,
     'X-Authrocket-Realm': config.realmId,
-    'Accept': 'application/json',
+    // 'Accept': 'application/json',
     'Content-Type': 'application/json'
     // 'User-agent': 'https://github.com/prescottprue/authrocket' //To provide AuthRocket a contact
   };
+	logger.log({description: 'addAuthRocketHeaders called.', config: config});
+
 	//Add each header to the request
 	each(keys(headers), (key) => {
 		newReq = addHeaderToReq(req, key, headers[key]);
 	});
+	logger.log({description: 'addAuthRocketHeaders request created.', request: newReq});
+
 	return newReq;
 }
 //Add header to an existing request
@@ -89,6 +94,7 @@ function addHeaderToReq(req, headerName, headerVal) {
 		logger.error({description: 'Header name and value required to add header to request.', func: 'addHeaderToReq', obj: 'request'});
 		return;
 	}
+	logger.log({description: 'Header value set.', headerName: headerName, headerVal: headerVal});
 	return req.set(headerName, headerVal);
 }
 //Add token to Authorization header if it exists
