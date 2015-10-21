@@ -3,7 +3,7 @@ import config from './config';
 import _ from 'lodash';
 import request from './utils/request';
 import logger from './utils/logger';
-import UsersAction from './actions/users';
+import * from './actions';
 
 export default class AuthRocket {
   constructor(settings) {
@@ -88,19 +88,84 @@ export default class AuthRocket {
       return Promise.reject(err);
     });
   }
-
- /** Users action namespace
-  * @example
-  * //Get users list
-  * authrocket.Users().get().then(function(loadedUser){
-  *  console.log('User found:', loadedUser);
-  * });
-  * //Get user by username
-  * authrocket.User('someguy1').get().then(function(loadedUser){
-  *  console.log('User found:', loadedUser);
-  * });
-  */
+  /** Realms action namespace
+   *
+   */
+  Realms(actionData) {
+    return new RealmsAction(actionData);
+  }
+  /** Users action namespace
+   * @example
+   * //Get users list
+   * authrocket.Users().get().then(function(loadedUser){
+   *  console.log('User found:', loadedUser);
+   * });
+   * //Get user by username
+   * authrocket.User('someguy1').get().then(function(loadedUser){
+   *  console.log('User found:', loadedUser);
+   * });
+   */
   Users(actionData) {
     return new UsersAction(actionData);
+  }
+  /** Credentials action namespace
+   *
+   */
+  Credentials(actionData) {
+    return new CredentialsAction(actionData);
+  }
+  /** SignupTokens action namespace
+   *
+   */
+  SignupTokens(actionData) {
+    return new SignupTokensAction(actionData);
+  }
+  /** Orgs action namespace
+   *
+   */
+  Orgs(actionData) {
+    return new OrgsAction(actionData);
+  }
+  /** Memberships action namespace
+   *
+   */
+  Memberships(actionData) {
+    return new MembershipsAction(actionData);
+  }
+  /** AuthProviders action namespace
+   *
+   */
+  AuthProviders(actionData) {
+    return new AuthProvidersAction(actionData);
+  }
+  /** ConnectedApps action namespace
+   *
+   */
+  ConnectedApps(actionData) {
+    return new ConnectedAppsAction(actionData);
+  }
+  /** Hooks action namespace
+   *
+   */
+  Hooks(actionData) {
+    return new HooksAction(actionData);
+  }
+  /** Sessions action namespace
+   *
+   */
+  Sessions(actionData) {
+    return new SessionsAction(actionData);
+  }
+  /** Events action namespace
+   *
+   */
+  Events(actionData) {
+    return new EventsAction(actionData);
+  }
+  /** Notifications action namespace
+   *
+   */
+  Notifications(actionData) {
+    return new NotificationsAction(actionData);
   }
 }
