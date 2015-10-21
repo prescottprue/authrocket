@@ -5,11 +5,43 @@ var port = process.env.PORT || 3000,
 var AuthRocket = require('../../dist/authrocket');
 authrocket = new AuthRocket();
 var server = http.createServer(function (req, res) {
-  // console.log('response:', res);
-  //Handle Message from SQS Queue
-  if (req.method === 'POST') {
+  //Handle get requests
+  if(req.method === 'GET'){
+    req.on('end', function() {
+      switch(req.url) {
+        case '/users':
+          authrocket.Users.get().then(function(usersList){
+            console.log('Users list loaded:', usersList);
+            res.write(usersList);
+            res.end();
+          }, function(errRes){
+            console.error('Error getting users list.', errRes.error);
+            res.writeHead('400');
+            res.write(errRes.error);
+            res.end();
+          });
+          break;
+        default:
+          res.writeHead(404,'NOT_FOUND', {'Content-Type': 'text/plain'});
+          res.write('Not Found');
+          res.end();
+      }
+    });
+  } else if (req.method === 'DELETE') {
+    req.on('end', function() {
+      authrocket.User({username: req.params.username}).del().then(function(usersList){
+        console.log('User deleted successfully', usersList);
+        res.write(usersList);
+        res.end();
+      }, function(errRes){
+        console.error('Error deleting user.', errRes.error);
+        res.writeHead('400');
+        res.write(errRes.error);
+        res.end();
+      });
+    });
+  } else if (req.method === 'POST') { //Handle post requests
     var body = '';
-
     req.on('data', function(chunk) {
         body += chunk;
     });
@@ -17,14 +49,14 @@ var server = http.createServer(function (req, res) {
     req.on('end', function() {
       switch(req.url) {
         case '/login':
-          console.log('login called with ',body, url.parse(body));
+          console.log('login called with ', body, url.parse(body));
           authrocket.login(req.body).then(function(loginRes){
             console.log('login successful:', loginRes);
             res.write('Login successful');
             res.end();
           }, function(errRes){
             console.error('Error logging in:', errRes.error);
-            res.writeHead('400');
+            res.writeHead(400,'ERROR', {'Content-Type': 'text/plain'});
             res.write('Error logging in');
             res.end();
           });
@@ -36,9 +68,21 @@ var server = http.createServer(function (req, res) {
             res.write('Signup successful');
             res.end();
           }, function(errRes){
-            // console.error('Error signing up:', errRes);
             console.error('Error signing up:', errRes.error);
-            res.writeHead('400');
+            res.writeHead(400,'ERROR', {'Content-Type': 'text/plain'});
+            res.write(errRes.message);
+            res.end();
+          });
+          break;
+        case '/users':
+          console.log('Users add called with ', body, url.parse(body).query);
+          authrocket.Users.add(req.body).then(function(newUserRes){
+            console.log('New user added successfully:', newUserRes);
+            res.write(newUserRes);
+            res.end();
+          }, function(errRes){
+            console.error('Error adding new user.', errRes.error);
+            res.writeHead(400,'ERROR', {'Content-Type': 'text/plain'});
             res.write(errRes.message);
             res.end();
           });

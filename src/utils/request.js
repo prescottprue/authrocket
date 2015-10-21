@@ -9,22 +9,22 @@ let request = {
 		if (queryData) {
 			req.query(queryData);
 		}
-		// req = addAuthHeader(req);
+		req = addAuthRocketHeaders(req);
 		return handleResponse(req);
 	},
 	post(endpoint, data) {
 		var req = superagent.post(endpoint).send(data);
-		// req = addAuthHeader(req);
+		req = addAuthRocketHeaders(req);
 		return handleResponse(req);
 	},
 	put(endpoint, data) {
 		var req = superagent.put(endpoint, data);
-		// req = addAuthHeader(req);
+		req = addAuthRocketHeaders(req);
 		return handleResponse(req);
 	},
 	del(endpoint, data) {
 		var req = superagent.put(endpoint, data);
-		// req = addAuthHeader(req);
+		req = addAuthRocketHeaders(req);
 		return handleResponse(req);
 	},
 	/** Attach AuthRocket request headers and make a request
@@ -66,8 +66,8 @@ function addAuthRocketHeaders(req) {
 	let newReq = req;
 	//TODO: Make this work
 	if (!config.accountId || !config.apiKey || !config.realmId) {
-		logger.error({description: 'AccountId, apiKey, and realmId are required.'});
-		return;
+		// logger.error({description: 'AccountId, apiKey, and realmId are required.'});
+		return req;
 	}
   let headers = {
     'X-Authrocket-Account': config.accountId,
