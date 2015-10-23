@@ -13836,6 +13836,50 @@ var Realms = (function (_Action) {
     _get(Object.getPrototypeOf(Realms.prototype), 'constructor', this).call(this, 'realms', actionData);
   }
 
+  /** Get realms
+   * @return {Promise}
+   * @example
+   * //list realms
+   * authrocket.Realms().get().then(function(realmsList){
+   *    console.log('List of realms', realmsList);
+   * });
+   */
+  /** Get a specific realm
+   * @param {String} token - String JWT token of logged in user
+   * @return {Promise}
+   * @example
+   * //Realms based on token
+   * var realmId = 'rl_0v1zTHXhtNgmDaXaDYSAqx';
+   * authrocket.Realms(realmId).then(function(realm){
+   *    console.log('Realm data:', realm);
+   * });
+   */
+  /** Add a realm
+   * @param {String} token - String JWT token of logged in user
+   * @return {Promise}
+   * @example
+   * var realmData = {name: 'Test Realm'};
+   * authrocket.Realms().add(realmData).then(function(){
+   *    console.log('Logged out successfully.');
+   * });
+   */
+  /** Update a realm
+   * @param {String} token - String JWT token of logged in user
+   * @return {Promise}
+   * @example
+   * authrocket.Realms().update().then(function(){
+   *    console.log('Logged out successfully.');
+   * });
+   */
+  /** Remove a realm
+   * @param {String} id - Realm Id
+   * @return {Promise}
+   * @example
+   * var realmId = 'rl_0v1zTHXhtNgmDaXaDYSAqx';
+   * authrocket.Realms(realmId).remove().then(function(){
+   *    console.log('Realm removed successfully.');
+   * });
+   */
   return Realms;
 })(_classesAction2['default']);
 
@@ -13850,6 +13894,50 @@ var Users = (function (_Action2) {
     _get(Object.getPrototypeOf(Users.prototype), 'constructor', this).call(this, 'users', actionData);
   }
 
+  /** Get realms
+   * @return {Promise}
+   * @example
+   * //list realms
+   * authrocket.Users().get().then(function(realmsList){
+   *    console.log('List of realms', realmsList);
+   * });
+   */
+  /** Get a specific realm
+   * @param {String} token - String JWT token of logged in user
+   * @return {Promise}
+   * @example
+   * //Users based on token
+   * var realmId = 'rl_0v1zTHXhtNgmDaXaDYSAqx';
+   * authrocket.Users(realmId).then(function(realm){
+   *    console.log('Realm data:', realm);
+   * });
+   */
+  /** Add a realm
+   * @param {String} token - String JWT token of logged in user
+   * @return {Promise}
+   * @example
+   * var realmData = {name: 'Test Realm'};
+   * authrocket.Users().add(realmData).then(function(){
+   *    console.log('Logged out successfully.');
+   * });
+   */
+  /** Update a realm
+   * @param {String} token - String JWT token of logged in user
+   * @return {Promise}
+   * @example
+   * authrocket.Users().update().then(function(){
+   *    console.log('Logged out successfully.');
+   * });
+   */
+  /** Remove a realm
+   * @param {String} id - Realm Id
+   * @return {Promise}
+   * @example
+   * var realmId = 'rl_0v1zTHXhtNgmDaXaDYSAqx';
+   * authrocket.Users(realmId).remove().then(function(){
+   *    console.log('Realm removed successfully.');
+   * });
+   */
   return Users;
 })(_classesAction2['default']);
 
@@ -13864,6 +13952,49 @@ var Credentials = (function (_Action3) {
     _get(Object.getPrototypeOf(Credentials.prototype), 'constructor', this).call(this, 'credentials', actionData);
   }
 
+  /** Get Users
+   * @return {Promise}
+   * @example
+   * authrocket.Users().get().then(function(UsersList){
+   *    console.log('List of Users', UsersList);
+   * });
+   */
+  /** Get a specific realm
+   * @param {String} token - String JWT token of logged in user
+   * @return {Promise}
+   * @example
+   * //Realms based on token
+   * var userId = 'rl_0v1zTHXhtNgmDaXaDYSAqx';
+   * authrocket.Users(userId).then(function(user){
+   *    console.log('Realm data:', user);
+   * });
+   */
+  /** Add a user
+   * @param {String} token - String JWT token of logged in user
+   * @return {Promise}
+   * @example
+   * var userData = {name: 'Test Realm'};
+   * authrocket.Users().add(userData).then(function(){
+   *    console.log('Logged out successfully.');
+   * });
+   */
+  /** Update a user
+   * @param {String} token - String JWT token of logged in user
+   * @return {Promise}
+   * @example
+   * authrocket.Users().update().then(function(){
+   *    console.log('Logged out successfully.');
+   * });
+   */
+  /** Remove a Realm
+   * @param {String} id - Realm Id
+   * @return {Promise}
+   * @example
+   * var username = 'rl_0v1zTHXhtNgmDaXaDYSAqx';
+   * authrocket.Users(username).remove().then(function(){
+   *    console.log('Realm removed successfully.');
+   * });
+   */
   return Credentials;
 })(_classesAction2['default']);
 
@@ -13878,6 +14009,47 @@ var SignupTokens = (function (_Action4) {
     _get(Object.getPrototypeOf(SignupTokens.prototype), 'constructor', this).call(this, 'signup_tokens', actionData);
   }
 
+  /** Get SignupTokens
+   * @return {Promise}
+   * @example
+   * authrocket.SignupTokens().get().then(function(usersList){
+   *    console.log('List of realms', realmsList);
+   * });
+   */
+  /** Get a specific Signup Token
+   * @return {Promise}
+   * @example
+   * //SignupTokens based on token
+   * var signupTokenId = 'rl_0v1zTHXhtNgmDaXaDYSAqx';
+   * authrocket.SignupTokens(signupTokenId).then(function(signupToken){
+   *    console.log('Realm data:', signupToken);
+   * });
+   */
+  /** Add a Signup Token
+   * @param {Object}  - Signup Token data
+   * @return {Promise}
+   * @example
+   * var signupTokenData = {name: 'Test Realm'};
+   * authrocket.SignupTokens().add(signupTokenData).then(function(){
+   *    console.log('Logged out successfully.');
+   * });
+   */
+  /** Update a signupToken
+   * @return {Promise}
+   * @example
+   * authrocket.SignupTokens().update().then(function(){
+   *    console.log('Logged out successfully.');
+   * });
+   */
+  /** Remove a signupToken
+   * @param {String} id - Realm Id
+   * @return {Promise}
+   * @example
+   * var signupToken = 'rl_0v1zTHXhtNgmDaXaDYSAqx';
+   * authrocket.SignupTokens(signupToken).remove().then(function(){
+   *    console.log('Realm removed successfully.');
+   * });
+   */
   return SignupTokens;
 })(_classesAction2['default']);
 
@@ -13892,6 +14064,49 @@ var Orgs = (function (_Action5) {
     _get(Object.getPrototypeOf(Orgs.prototype), 'constructor', this).call(this, 'orgs', actionData);
   }
 
+  /** Get Orgs
+   * @return {Promise}
+   * @example
+   * //list Orgs
+   * authrocket.Realms().get().then(function(OrgsList){
+   *    console.log('List of Orgs', OrgsList);
+   * });
+   */
+  /** Get a specific org
+   * @param {String} name - Name or id of organization
+   * @return {Promise}
+   * @example
+   * var orgId = 'rl_0v1zTHXhtNgmDaXaDYSAqx';
+   * authrocket.Realms(orgId).then(function(org){
+   *    console.log('Realm data:', org);
+   * });
+   */
+  /** Add a org
+   * @param {Object} orgData - Data associated with organization
+   * @param {String} name - Name of org
+   * @return {Promise}
+   * @example
+   * var orgData = {name: 'Admins'};
+   * authrocket.Realms().add(orgData).then(function(){
+   *    console.log('Logged out successfully.');
+   * });
+   */
+  /** Update a org
+   * @return {Promise}
+   * @example
+   * authrocket.Realms().update().then(function(){
+   *    console.log('Logged out successfully.');
+   * });
+   */
+  /** Remove a org
+   * @param {String} id - Org Id
+   * @return {Promise}
+   * @example
+   * var orgId = 'rl_0v1zTHXhtNgmDaXaDYSAqx';
+   * authrocket.Realms(orgId).remove().then(function(){
+   *    console.log('Realm removed successfully.');
+   * });
+   */
   return Orgs;
 })(_classesAction2['default']);
 
@@ -14047,18 +14262,39 @@ var AuthRocket = (function () {
   /** Login as a user
    * @param {Object} loginData - Object containing data to signup with
    * @param {String} loginData.email - Email of new user
+   * @param {String} loginData.username - Username of new user
    * @param {String} loginData.password - Password of new user
    * @return {Promise}
+   * @example
+   * //login as a user
+   * var userData = {username: 'testuser1', password: 'secretstring'};
+   * authrocket.login(userData).then(function(newUser){
+   *    console.log('Successful signup:', newUser);
+   * });
    */
 
   _createClass(AuthRocket, [{
     key: 'login',
     value: function login(loginData) {
+      if (!_lodash2['default'].has(loginData, 'username') && !_lodash2['default'].has(loginData, 'email') || !_lodash2['default'].has(loginData, 'username')) {
+        _utilsLogger2['default'].error({ description: 'Username/Email and password are required to login.', func: 'login', obj: 'AuthRocket' });
+        return Promise.reject('Username/Email and password are required.');
+      }
       return _utilsRequest2['default'].post(_config2['default'].urls.js + '/login', loginData).then(function (res) {
         _utilsLogger2['default'].log({ description: 'successful login', res: res });
         if (_lodash2['default'].has(res, 'error')) {
-          _utilsLogger2['default'].error({ description: 'Error signing up.', error: res.error, res: res, func: 'signup', obj: 'AuthRocket' });
+          _utilsLogger2['default'].error({ description: 'Error logging in.', error: res.error, res: res, func: 'login', obj: 'AuthRocket' });
           return Promise.reject(res.error);
+        }
+        if (_lodash2['default'].has(res, 'errno')) {
+          var error = res.errno;
+          var description = 'Error signing up.';
+          if (error === 'ENOTFOUND') {
+            error = 'User not found.';
+            description = error;
+          }
+          _utilsLogger2['default'].error({ description: error, error: res.errno, res: res, func: 'login', obj: 'AuthRocket' });
+          return Promise.reject(error);
         }
         return res;
       }, function (error) {
@@ -14068,19 +14304,28 @@ var AuthRocket = (function () {
     }
 
     /** Logout a user
-     * @param {Object} token - Object containing data to signup with
+     * @param {String} token - String JWT token of logged in user
      * @return {Promise}
+     * @example
+     * //logout based on token
+     * var token = 'b89787f98728rcn8279.898er89qb8bsf.98basdfasd';
+     * authrocket.logout(token).then(function(){
+     *    console.log('Logged out successfully.');
+     * });
      */
   }, {
     key: 'logout',
     value: function logout(token) {
-      console.log('config:', _config2['default'].urls.js);
+      if (!token || !_lodash2['default'].isString(token)) {
+        _utilsLogger2['default'].error({ description: 'Token string is required to logout.', func: 'logout', obj: 'AuthRocket' });
+        return Promise.reject('Valid token is required to logout.');
+      }
       return _utilsRequest2['default'].post(_config2['default'].urls.js + '/logout', { token: token }).then(function (res) {
-        _utilsLogger2['default'].log({ description: 'successful logout', res: res });
-        if (_lodash2['default'].has(res, 'error')) {
-          _utilsLogger2['default'].error({ description: 'Error signing up.', error: res.error, res: res, func: 'signup', obj: 'AuthRocket' });
-          return Promise.reject(res.error);
+        if (_lodash2['default'].has(res, 'error') || _lodash2['default'].has(res, 'errno')) {
+          _utilsLogger2['default'].error({ description: 'Error logging out.', error: res.error || res.errno, res: res, func: 'logout', obj: 'AuthRocket' });
+          return Promise.reject(res.error || res.errno);
         }
+        _utilsLogger2['default'].log({ description: 'Successful logout.', res: res, func: 'logout', obj: 'AuthRocket' });
         return res;
       }, function (err) {
         _utilsLogger2['default'].error({ description: 'Error logging out.', error: err });
@@ -14094,14 +14339,24 @@ var AuthRocket = (function () {
      * @param {String} signupData.password - Password of new user
      * @param {String} signupData.confirm - Object containing data to signup with
      * @return {Promise}
+     * @example
+     * //signup
+     * var userData = {username: 'testuser1', email: 'test@test.com', password: 'secretstring'};
+     * authrocket.signup(userData).then(function(newUser){
+     *    console.log('Successful signup:', newUser);
+     * });
      */
   }, {
     key: 'signup',
     value: function signup(signupData) {
+      if (!_lodash2['default'].has(signupData, 'username') && !_lodash2['default'].has(signupData, 'email') || !_lodash2['default'].has(signupData, 'username')) {
+        _utilsLogger2['default'].error({ description: 'Username/Email and password are required to login.', func: 'login', obj: 'AuthRocket' });
+        return Promise.reject('Username/Email and password are required.');
+      }
       return _utilsRequest2['default'].post(_config2['default'].urls.js + '/signup', signupData).then(function (res) {
-        if (_lodash2['default'].has(res, 'error')) {
-          _utilsLogger2['default'].error({ description: 'Error signing up.', error: res.error, res: res, func: 'signup', obj: 'AuthRocket' });
-          return Promise.reject(res.error);
+        if (_lodash2['default'].has(res, 'error') || _lodash2['default'].has(res, 'errno')) {
+          _utilsLogger2['default'].error({ description: 'Error signing up.', error: res.error || res.errno, res: res, func: 'signup', obj: 'AuthRocket' });
+          return Promise.reject(res.error || res.errno);
         }
         _utilsLogger2['default'].log({ description: 'Successful signup', res: res, func: 'signup', obj: 'AuthRocket' });
         return res;
@@ -14113,20 +14368,27 @@ var AuthRocket = (function () {
 
     /** Verify an existing token is valid
      * @param {String} token - JSON Web Token to verify
+     * @param {String} expand - Values to expand (memberships and/or token)
      * @return {Promise}
+     * @example
+     * //verify token and return membership and token data
+     * var token = 'b89787f98728rcn8279.898er89qb8bsf.98basdfasd';
+     * authrocket.verify(token , 'memberships,token').then(function(response){
+     *    console.log('token is valid. User data:', response);
+     * });
      */
   }, {
     key: 'verify',
     value: function verify(token) {
-      return _utilsRequest2['default'].post(_config2['default'].urls.js + '/sessions/' + token).then(function (res) {
-        _utilsLogger2['default'].log({ description: 'token is valid', res: res, func: 'verify', obj: 'AuthRocket' });
+      return _utilsRequest2['default'].get(_config2['default'].urls.js + '/sessions/' + token).then(function (res) {
+        _utilsLogger2['default'].log({ description: 'Token/Session is valid.', res: res, func: 'verify', obj: 'AuthRocket' });
         if (_lodash2['default'].has(res, 'error')) {
-          _utilsLogger2['default'].error({ description: 'Error signing up.', error: res.error, res: res, func: 'signup', obj: 'AuthRocket' });
+          _utilsLogger2['default'].error({ description: 'Error verifying token/session.', error: res.error, res: res, func: 'verify', obj: 'AuthRocket' });
           return Promise.reject(res.error);
         }
         return res;
       }, function (err) {
-        _utilsLogger2['default'].error({ description: 'Token is invalid.', error: err, func: 'verify', obj: 'AuthRocket' });
+        _utilsLogger2['default'].error({ description: 'Token/Session is invalid.', error: err, func: 'verify', obj: 'AuthRocket' });
         return Promise.reject(err);
       });
     }

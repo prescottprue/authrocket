@@ -1,6 +1,6 @@
 {
   "name": "authrocket",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Library for interfacing with AuthRocket service.",
   "main": "dist/authrocket.js",
   "jsnext:main": "src/authrocket.js",
