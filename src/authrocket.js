@@ -17,15 +17,36 @@ export default class AuthRocket {
   /** Login as a user
    * @param {Object} loginData - Object containing data to signup with
    * @param {String} loginData.email - Email of new user
+   * @param {String} loginData.username - Username of new user
    * @param {String} loginData.password - Password of new user
    * @return {Promise}
+   * @example
+   * //login as a user
+   * var userData = {username: 'testuser1', password: 'secretstring'};
+   * authrocket.login(userData).then(function(newUser){
+   *    console.log('Successful signup:', newUser);
+   * });
    */
   login(loginData) {
+    if ((!_.has(loginData, 'username') && !_.has(loginData, 'email')) || !_.has(loginData, 'username')) {
+      logger.error({description: 'Username/Email and password are required to login.', func: 'login', obj: 'AuthRocket'});
+      return Promise.reject('Username/Email and password are required.');
+    }
     return request.post(`${config.urls.js}/login`, loginData).then((res) => {
       logger.log({description: 'successful login', res: res});
       if (_.has(res, 'error')) {
-        logger.error({description: 'Error signing up.', error: res.error, res: res, func: 'signup', obj: 'AuthRocket'});
+        logger.error({description: 'Error logging in.', error: res.error, res: res, func: 'login', obj: 'AuthRocket'});
         return Promise.reject(res.error);
+      }
+      if (_.has(res, 'errno')) {
+        let error = res.errno;
+        let description = 'Error signing up.';
+        if (error === 'ENOTFOUND') {
+            error = 'User not found.';
+            description = error;
+        }
+        logger.error({description: error, error: res.errno, res: res, func: 'login', obj: 'AuthRocket'});
+        return Promise.reject(error);
       }
       return res;
     }, (error) => {
@@ -34,17 +55,26 @@ export default class AuthRocket {
     });
   }
   /** Logout a user
-   * @param {Object} token - Object containing data to signup with
+   * @param {String} token - String JWT token of logged in user
    * @return {Promise}
+   * @example
+   * //logout based on token
+   * var token = 'b89787f98728rcn8279.898er89qb8bsf.98basdfasd';
+   * authrocket.logout(token).then(function(){
+   *    console.log('Logged out successfully.');
+   * });
    */
   logout(token) {
-    console.log('config:', config.urls.js);
+    if (!token || !_.isString(token)) {
+      logger.error({description: 'Token string is required to logout.', func: 'logout', obj: 'AuthRocket'});
+      return Promise.reject('Valid token is required to logout.');
+    }
     return request.post(`${config.urls.js}/logout`, {token: token}).then((res) => {
-      logger.log({description: 'successful logout', res: res});
-      if (_.has(res, 'error')) {
-        logger.error({description: 'Error signing up.', error: res.error, res: res, func: 'signup', obj: 'AuthRocket'});
-        return Promise.reject(res.error);
+      if (_.has(res, 'error') || _.has(res, 'errno')) {
+        logger.error({description: 'Error logging out.', error: res.error || res.errno, res: res, func: 'logout', obj: 'AuthRocket'});
+        return Promise.reject(res.error || res.errno);
       }
+      logger.log({description: 'Successful logout.', res: res, func: 'logout', obj: 'AuthRocket'});
       return res;
     }, (err) => {
       logger.error({description: 'Error logging out.', error: err});
@@ -57,12 +87,22 @@ export default class AuthRocket {
    * @param {String} signupData.password - Password of new user
    * @param {String} signupData.confirm - Object containing data to signup with
    * @return {Promise}
+   * @example
+   * //signup
+   * var userData = {username: 'testuser1', email: 'test@test.com', password: 'secretstring'};
+   * authrocket.signup(userData).then(function(newUser){
+   *    console.log('Successful signup:', newUser);
+   * });
    */
   signup(signupData) {
+    if ((!_.has(signupData, 'username') && !_.has(signupData, 'email')) || !_.has(signupData, 'username')) {
+      logger.error({description: 'Username/Email and password are required to login.', func: 'login', obj: 'AuthRocket'});
+      return Promise.reject('Username/Email and password are required.');
+    }
     return request.post(`${config.urls.js}/signup`, signupData).then((res) => {
-      if (_.has(res, 'error')) {
-        logger.error({description: 'Error signing up.', error: res.error, res: res, func: 'signup', obj: 'AuthRocket'});
-        return Promise.reject(res.error);
+      if (_.has(res, 'error') || _.has(res, 'errno')) {
+        logger.error({description: 'Error signing up.', error: res.error || res.errno, res: res, func: 'signup', obj: 'AuthRocket'});
+        return Promise.reject(res.error || res.errno);
       }
       logger.log({description: 'Successful signup', res: res, func: 'signup', obj: 'AuthRocket'});
       return res;
@@ -73,18 +113,25 @@ export default class AuthRocket {
   }
   /** Verify an existing token is valid
    * @param {String} token - JSON Web Token to verify
+   * @param {String} expand - Values to expand (memberships and/or token)
    * @return {Promise}
+   * @example
+   * //verify token and return membership and token data
+   * var token = 'b89787f98728rcn8279.898er89qb8bsf.98basdfasd';
+   * authrocket.verify(token , 'memberships,token').then(function(response){
+   *    console.log('token is valid. User data:', response);
+   * });
    */
   verify(token) {
-    return request.post(`${config.urls.js}/sessions/${token}`).then((res) => {
-      logger.log({description: 'token is valid', res: res, func: 'verify', obj: 'AuthRocket'});
+    return request.get(`${config.urls.js}/sessions/${token}`).then((res) => {
+      logger.log({description: 'Token/Session is valid.', res: res, func: 'verify', obj: 'AuthRocket'});
       if (_.has(res, 'error')) {
-        logger.error({description: 'Error signing up.', error: res.error, res: res, func: 'signup', obj: 'AuthRocket'});
+        logger.error({description: 'Error verifying token/session.', error: res.error, res: res, func: 'verify', obj: 'AuthRocket'});
         return Promise.reject(res.error);
       }
       return res;
     }, (err) => {
-      logger.error({description: 'Token is invalid.', error: err, func: 'verify', obj: 'AuthRocket'});
+      logger.error({description: 'Token/Session is invalid.', error: err, func: 'verify', obj: 'AuthRocket'});
       return Promise.reject(err);
     });
   }
