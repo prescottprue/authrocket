@@ -14,7 +14,7 @@ class Config {
 		if (!configInstance) {
       configInstance = this;
     }
-		// console.log({description: 'Config object created.', config: merge(this, defaultConfig), func: 'constructor', obj: 'Config'});
+		console.log({description: 'Config object created.', config: merge(this, defaultConfig), func: 'constructor', obj: 'Config'});
 		return merge(configInstance, defaultConfig);
 	}
   applySettings(settingsData) {

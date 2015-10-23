@@ -4,44 +4,68 @@ import superagent from 'superagent';
 import {each, keys} from 'lodash';
 
 let request = {
-	get(endpoint, queryData) {
+	/** Run get request with provided data
+	 * @param {String} endpoint - Endpoint to send request to
+	 * @param {Object|String} data - Query data
+	 * @param {Boolean} includeHeaders - Whether or not to include auth headers
+	 * @return {Promise}
+	 */
+	get(endpoint, queryData, includeHeaders) {
 		var req = superagent.get(endpoint);
 		if (queryData) {
 			req.query(queryData);
 		}
-		req = addAuthRocketHeaders(req);
+		req = attachHeaders(req, includeHeaders);
 		return handleResponse(req);
 	},
-	post(endpoint, data) {
-		var req = superagent.post(endpoint).send(data);
-		req = addAuthRocketHeaders(req);
-		return handleResponse(req);
-	},
-	put(endpoint, data) {
-		var req = superagent.put(endpoint, data);
-		req = addAuthRocketHeaders(req);
-		return handleResponse(req);
-	},
-	del(endpoint, data) {
-		var req = superagent.put(endpoint, data);
-		req = addAuthRocketHeaders(req);
-		return handleResponse(req);
-	},
-	/** Attach AuthRocket request headers and make a request
+	/** Run POST request with provided data
 	 * @param {String} endpoint - Endpoint to send request to
 	 * @param {Object|String} data - Request data
+	 * @param {Boolean} includeHeaders - Whether or not to include auth headers
 	 * @return {Promise}
 	 */
-	 withHeaders(type, url, data) {
-		 var req = superagent[type](url);
-		 req = addAuthRocketHeaders(req);
-		 return handleResponse(req);
-	 }
+	post(endpoint, data, includeHeaders) {
+		var req = superagent.post(endpoint).send(data);
+		req = attachHeaders(req, includeHeaders);
+		return handleResponse(req);
+	},
+	/** Run PUT request with provided data
+	 * @param {String} endpoint - Endpoint to send request to
+	 * @param {Object|String} data - Request data
+	 * @param {Boolean} includeHeaders - Whether or not to include auth headers
+	 * @return {Promise}
+	 */
+	put(endpoint, data, includeHeaders) {
+		var req = superagent.put(endpoint, data);
+		req = attachHeaders(req, includeHeaders);
+		return handleResponse(req);
+	},
+	/** Run DELETE request with provided data
+	 * @param {String} endpoint - Endpoint to send request to
+	 * @param {Object|String} data - Request data
+	 * @param {Boolean} includeHeaders - Whether or not to include auth headers
+	 * @return {Promise}
+	 */
+	del(endpoint, data, includeHeaders) {
+		var req = superagent.put(endpoint, data);
+		req = attachHeaders(req, includeHeaders);
+		return handleResponse(req);
+	}
 };
 
 export default request;
-
-//Wrap response in promise that has error handling
+/** Attach headers to request
+ * @private
+ */
+function attachHeaders(req, include) {
+	if (typeof include === 'undefined' || include) {
+		return addAuthRocketHeaders(req);
+	}
+	return req;
+}
+/** Wrap response in promise that has error handling
+ * @private
+ */
 function handleResponse(req) {
 	return new Promise((resolve, reject) => {
 		req.end((err, res) => {
@@ -49,25 +73,29 @@ function handleResponse(req) {
 				// logger.log({description: 'Response:', response:res, func:'handleResponse', file: 'request'});
 				return resolve(res.body);
 			} else {
+				logger.warn({description: 'Error response.', error: err, func: 'handleResponse'});
 				if (err.status == 401) {
 					logger.warn({description: 'Unauthorized. You must be signed into make this request.', func: 'handleResponse'});
 				}
 				if (err && err.response) {
 					return reject(err.response.text);
 				}
-				logger.warn({description: 'Error response.', error: err, func: 'handleResponse'});
+				if (err && err.errno) {
+					// logger.warn({description: 'Does not exist.', error: err, func: 'handleResponse'});
+					return reject(err.errno);
+				}
 				return reject(err);
 			}
 		});
 	});
 }
-//Add auth rocket headers to request
+/** Add auth rocket headers to request
+ * @private
+ */
 function addAuthRocketHeaders(req) {
 	let newReq = req;
-
-	//TODO: Make this work
 	if (!config.accountId || !config.apiKey || !config.realmId) {
-		logger.error({description: 'AccountId, apiKey, and realmId are required.'});
+		logger.error({description: 'AccountId, apiKey, and realmId are required.', func: 'addAuthRocketHeaders'});
 		return req;
 	}
   let headers = {
@@ -79,16 +107,16 @@ function addAuthRocketHeaders(req) {
     // 'User-agent': 'https://github.com/prescottprue/authrocket' //To provide AuthRocket a contact
   };
 	logger.log({description: 'addAuthRocketHeaders called.', config: config});
-
 	//Add each header to the request
 	each(keys(headers), (key) => {
 		newReq = addHeaderToReq(req, key, headers[key]);
 	});
-	logger.log({description: 'addAuthRocketHeaders request created.', request: newReq});
-
+	logger.log({description: 'addAuthRocketHeaders request created.', func: 'addAuthRocketHeaders'});
 	return newReq;
 }
-//Add header to an existing request
+/** Add header to an existing request
+ * @private
+ */
 function addHeaderToReq(req, headerName, headerVal) {
 	if (!headerName || !headerVal) {
 		logger.error({description: 'Header name and value required to add header to request.', func: 'addHeaderToReq', obj: 'request'});
@@ -96,12 +124,4 @@ function addHeaderToReq(req, headerName, headerVal) {
 	}
 	logger.log({description: 'Header value set.', headerName: headerName, headerVal: headerVal});
 	return req.set(headerName, headerVal);
-}
-//Add token to Authorization header if it exists
-function addAuthHeader(req) {
-	// if (token.string) {
-	// 	req = req.set('Authorization', 'Bearer ' + token.string);
-	// 	console.info({message: 'Set auth header', func: 'addAuthHeader', file: 'request'});
-	// }
-	// return req;
 }

@@ -118,7 +118,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 			if (!configInstance) {
 				configInstance = this;
 			}
-			// console.log({description: 'Config object created.', config: merge(this, defaultConfig), func: 'constructor', obj: 'Config'});
+			console.log({ description: 'Config object created.', config: _.merge(this, defaultConfig), func: 'constructor', obj: 'Config' });
 			return _.merge(configInstance, defaultConfig);
 		}
 
@@ -272,42 +272,67 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 	}
 
 	var request = {
-		get: function get(endpoint, queryData) {
+		/** Run get request with provided data
+   * @param {String} endpoint - Endpoint to send request to
+   * @param {Object|String} data - Query data
+   * @param {Boolean} includeHeaders - Whether or not to include auth headers
+   * @return {Promise}
+   */
+		get: function get(endpoint, queryData, includeHeaders) {
 			var req = superagent.get(endpoint);
 			if (queryData) {
 				req.query(queryData);
 			}
-			req = addAuthRocketHeaders(req);
+			req = attachHeaders(req, includeHeaders);
 			return handleResponse(req);
 		},
-		post: function post(endpoint, data) {
-			var req = superagent.post(endpoint).send(data);
-			req = addAuthRocketHeaders(req);
-			return handleResponse(req);
-		},
-		put: function put(endpoint, data) {
-			var req = superagent.put(endpoint, data);
-			req = addAuthRocketHeaders(req);
-			return handleResponse(req);
-		},
-		del: function del(endpoint, data) {
-			var req = superagent.put(endpoint, data);
-			req = addAuthRocketHeaders(req);
-			return handleResponse(req);
-		},
-		/** Attach AuthRocket request headers and make a request
+		/** Run POST request with provided data
    * @param {String} endpoint - Endpoint to send request to
    * @param {Object|String} data - Request data
+   * @param {Boolean} includeHeaders - Whether or not to include auth headers
    * @return {Promise}
    */
-		withHeaders: function withHeaders(type, url, data) {
-			var req = superagent[type](url);
-			req = addAuthRocketHeaders(req);
+		post: function post(endpoint, data, includeHeaders) {
+			var req = superagent.post(endpoint).send(data);
+			req = attachHeaders(req, includeHeaders);
+			return handleResponse(req);
+		},
+		/** Run PUT request with provided data
+   * @param {String} endpoint - Endpoint to send request to
+   * @param {Object|String} data - Request data
+   * @param {Boolean} includeHeaders - Whether or not to include auth headers
+   * @return {Promise}
+   */
+		put: function put(endpoint, data, includeHeaders) {
+			var req = superagent.put(endpoint, data);
+			req = attachHeaders(req, includeHeaders);
+			return handleResponse(req);
+		},
+		/** Run DELETE request with provided data
+   * @param {String} endpoint - Endpoint to send request to
+   * @param {Object|String} data - Request data
+   * @param {Boolean} includeHeaders - Whether or not to include auth headers
+   * @return {Promise}
+   */
+		del: function del(endpoint, data, includeHeaders) {
+			var req = superagent.put(endpoint, data);
+			req = attachHeaders(req, includeHeaders);
 			return handleResponse(req);
 		}
 	};
 
-	//Wrap response in promise that has error handling
+	/** Attach headers to request
+  * @private
+  */
+	function attachHeaders(req, include) {
+		if (typeof include === 'undefined' || include) {
+			return addAuthRocketHeaders(req);
+		}
+		return req;
+	}
+	/** Wrap response in promise that has error handling
+  * @private
+  */
 	function handleResponse(req) {
 		return new Promise(function (resolve, reject) {
 			req.end(function (err, res) {
@@ -315,25 +340,29 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					// logger.log({description: 'Response:', response:res, func:'handleResponse', file: 'request'});
 					return resolve(res.body);
 				} else {
+					_logger.warn({ description: 'Error response.', error: err, func: 'handleResponse' });
 					if (err.status == 401) {
 						_logger.warn({ description: 'Unauthorized. You must be signed into make this request.', func: 'handleResponse' });
 					}
 					if (err && err.response) {
 						return reject(err.response.text);
 					}
-					_logger.warn({ description: 'Error response.', error: err, func: 'handleResponse' });
+					if (err && err.errno) {
+						// logger.warn({description: 'Does not exist.', error: err, func: 'handleResponse'});
+						return reject(err.errno);
+					}
 					return reject(err);
 				}
 			});
 		});
 	}
-	//Add auth rocket headers to request
+	/** Add auth rocket headers to request
+  * @private
+  */
 	function addAuthRocketHeaders(req) {
 		var newReq = req;
-
-		//TODO: Make this work
 		if (!config.accountId || !config.apiKey || !config.realmId) {
-			_logger.error({ description: 'AccountId, apiKey, and realmId are required.' });
+			_logger.error({ description: 'AccountId, apiKey, and realmId are required.', func: 'addAuthRocketHeaders' });
 			return req;
 		}
 		var headers = {
@@ -345,16 +374,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 			// 'User-agent': 'https://github.com/prescottprue/authrocket' //To provide AuthRocket a contact
 		};
 		_logger.log({ description: 'addAuthRocketHeaders called.', config: config });
-
 		//Add each header to the request
 		_.each(_.keys(headers), function (key) {
 			newReq = addHeaderToReq(req, key, headers[key]);
 		});
-		_logger.log({ description: 'addAuthRocketHeaders request created.', request: newReq });
-
+		_logger.log({ description: 'addAuthRocketHeaders request created.', func: 'addAuthRocketHeaders' });
 		return newReq;
 	}
-	//Add header to an existing request
+	/** Add header to an existing request
+  * @private
+  */
 	function addHeaderToReq(req, headerName, headerVal) {
 		if (!headerName || !headerVal) {
 			_logger.error({ description: 'Header name and value required to add header to request.', func: 'addHeaderToReq', obj: 'request' });
@@ -838,8 +867,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 		return Notifications;
 	})(Action);
 
-	console.log('actions:', Actions);
-
 	var AuthRocket = (function () {
 		function AuthRocket(settings) {
 			_classCallCheck(this, AuthRocket);
@@ -869,19 +896,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 		_createClass(AuthRocket, [{
 			key: 'login',
 			value: function login(loginData) {
-				if (!___default.has(loginData, 'username') && !___default.has(loginData, 'email') || !___default.has(loginData, 'username')) {
-					_logger.error({ description: 'Username/Email and password are required to login.', func: 'login', obj: 'AuthRocket' });
+				if (!___default.has(loginData, 'username') || !___default.has(loginData, 'password')) {
+					_logger.error({ description: 'Username and password are required to login.', func: 'login', obj: 'AuthRocket' });
 					return Promise.reject('Username/Email and password are required.');
 				}
-				return request.post(config.urls.js + '/login', loginData).then(function (res) {
-					_logger.log({ description: 'successful login', res: res });
+				_logger.log({ description: 'Calling login.', url: config.urls.js + '/login', loginData: loginData, func: 'login', obj: 'AuthRocket' });
+				return request.post(config.urls.js + '/login', loginData, false).then(function (res) {
 					if (___default.has(res, 'error')) {
 						_logger.error({ description: 'Error logging in.', error: res.error, res: res, func: 'login', obj: 'AuthRocket' });
 						return Promise.reject(res.error);
 					}
 					if (___default.has(res, 'errno')) {
 						var error = res.errno;
-						var description = 'Error signing up.';
+						var description = 'Error logging in.';
 						if (error === 'ENOTFOUND') {
 							error = 'User not found.';
 							description = error;
@@ -890,9 +917,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 						return Promise.reject(error);
 					}
 					return res;
-				}, function (error) {
-					_logger.error({ description: 'Error logging in.', error: error });
-					return Promise.reject(error);
+				}, function (err) {
+					_logger.error({ description: 'Error logging in.', error: err, func: 'login', obj: 'AuthRocket' });
+					if (err === 'ENOTFOUND') {
+						err = 'User not found.';
+					}
+					return Promise.reject(err);
 				});
 			}
 
@@ -913,7 +943,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					_logger.error({ description: 'Token string is required to logout.', func: 'logout', obj: 'AuthRocket' });
 					return Promise.reject('Valid token is required to logout.');
 				}
-				return request.post(config.urls.js + '/logout', { token: token }).then(function (res) {
+				return request.post(config.urls.js + '/logout', { token: token }, false).then(function (res) {
 					if (___default.has(res, 'error') || ___default.has(res, 'errno')) {
 						_logger.error({ description: 'Error logging out.', error: res.error || res.errno, res: res, func: 'logout', obj: 'AuthRocket' });
 						return Promise.reject(res.error || res.errno);
@@ -973,7 +1003,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 		}, {
 			key: 'verify',
 			value: function verify(token) {
-				return request.get(config.urls.js + '/sessions/' + token).then(function (res) {
+				return request.get(config.urls.api + '/sessions/' + token).then(function (res) {
 					_logger.log({ description: 'Token/Session is valid.', res: res, func: 'verify', obj: 'AuthRocket' });
 					if (___default.has(res, 'error')) {
 						_logger.error({ description: 'Error verifying token/session.', error: res.error, res: res, func: 'verify', obj: 'AuthRocket' });

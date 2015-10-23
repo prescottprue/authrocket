@@ -4,7 +4,6 @@ import _ from 'lodash';
 import request from './utils/request';
 import logger from './utils/logger';
 import * as Actions from './actions';
-console.log('actions:', Actions);
 export default class AuthRocket {
   constructor(settings) {
     if (settings && _.isString(settings)) {
@@ -28,19 +27,19 @@ export default class AuthRocket {
    * });
    */
   login(loginData) {
-    if ((!_.has(loginData, 'username') && !_.has(loginData, 'email')) || !_.has(loginData, 'username')) {
-      logger.error({description: 'Username/Email and password are required to login.', func: 'login', obj: 'AuthRocket'});
+    if (!_.has(loginData, 'username') || !_.has(loginData, 'password')) {
+      logger.error({description: 'Username and password are required to login.', func: 'login', obj: 'AuthRocket'});
       return Promise.reject('Username/Email and password are required.');
     }
-    return request.post(`${config.urls.js}/login`, loginData).then((res) => {
-      logger.log({description: 'successful login', res: res});
+    logger.log({description: 'Calling login.', url: `${config.urls.js}/login`, loginData: loginData, func: 'login', obj: 'AuthRocket'});
+    return request.post(`${config.urls.js}/login`, loginData, false).then((res) => {
       if (_.has(res, 'error')) {
         logger.error({description: 'Error logging in.', error: res.error, res: res, func: 'login', obj: 'AuthRocket'});
         return Promise.reject(res.error);
       }
       if (_.has(res, 'errno')) {
         let error = res.errno;
-        let description = 'Error signing up.';
+        let description = 'Error logging in.';
         if (error === 'ENOTFOUND') {
             error = 'User not found.';
             description = error;
@@ -49,9 +48,12 @@ export default class AuthRocket {
         return Promise.reject(error);
       }
       return res;
-    }, (error) => {
-      logger.error({description: 'Error logging in.', error: error});
-      return Promise.reject(error);
+    }, (err) => {
+      logger.error({description: 'Error logging in.', error: err, func: 'login', obj: 'AuthRocket'});
+      if (err === 'ENOTFOUND') {
+        err = 'User not found.';
+      }
+      return Promise.reject(err);
     });
   }
   /** Logout a user
@@ -69,7 +71,7 @@ export default class AuthRocket {
       logger.error({description: 'Token string is required to logout.', func: 'logout', obj: 'AuthRocket'});
       return Promise.reject('Valid token is required to logout.');
     }
-    return request.post(`${config.urls.js}/logout`, {token: token}).then((res) => {
+    return request.post(`${config.urls.js}/logout`, {token: token}, false).then((res) => {
       if (_.has(res, 'error') || _.has(res, 'errno')) {
         logger.error({description: 'Error logging out.', error: res.error || res.errno, res: res, func: 'logout', obj: 'AuthRocket'});
         return Promise.reject(res.error || res.errno);
@@ -123,7 +125,7 @@ export default class AuthRocket {
    * });
    */
   verify(token) {
-    return request.get(`${config.urls.js}/sessions/${token}`).then((res) => {
+    return request.get(`${config.urls.api}/sessions/${token}`).then((res) => {
       logger.log({description: 'Token/Session is valid.', res: res, func: 'verify', obj: 'AuthRocket'});
       if (_.has(res, 'error')) {
         logger.error({description: 'Error verifying token/session.', error: res.error, res: res, func: 'verify', obj: 'AuthRocket'});

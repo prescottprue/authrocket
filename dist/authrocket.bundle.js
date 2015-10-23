@@ -14245,8 +14245,6 @@ var _actions = require('./actions');
 
 var Actions = _interopRequireWildcard(_actions);
 
-console.log('actions:', Actions);
-
 var AuthRocket = (function () {
   function AuthRocket(settings) {
     _classCallCheck(this, AuthRocket);
@@ -14276,19 +14274,19 @@ var AuthRocket = (function () {
   _createClass(AuthRocket, [{
     key: 'login',
     value: function login(loginData) {
-      if (!_lodash2['default'].has(loginData, 'username') && !_lodash2['default'].has(loginData, 'email') || !_lodash2['default'].has(loginData, 'username')) {
-        _utilsLogger2['default'].error({ description: 'Username/Email and password are required to login.', func: 'login', obj: 'AuthRocket' });
+      if (!_lodash2['default'].has(loginData, 'username') || !_lodash2['default'].has(loginData, 'password')) {
+        _utilsLogger2['default'].error({ description: 'Username and password are required to login.', func: 'login', obj: 'AuthRocket' });
         return Promise.reject('Username/Email and password are required.');
       }
-      return _utilsRequest2['default'].post(_config2['default'].urls.js + '/login', loginData).then(function (res) {
-        _utilsLogger2['default'].log({ description: 'successful login', res: res });
+      _utilsLogger2['default'].log({ description: 'Calling login.', url: _config2['default'].urls.js + '/login', loginData: loginData, func: 'login', obj: 'AuthRocket' });
+      return _utilsRequest2['default'].post(_config2['default'].urls.js + '/login', loginData, false).then(function (res) {
         if (_lodash2['default'].has(res, 'error')) {
           _utilsLogger2['default'].error({ description: 'Error logging in.', error: res.error, res: res, func: 'login', obj: 'AuthRocket' });
           return Promise.reject(res.error);
         }
         if (_lodash2['default'].has(res, 'errno')) {
           var error = res.errno;
-          var description = 'Error signing up.';
+          var description = 'Error logging in.';
           if (error === 'ENOTFOUND') {
             error = 'User not found.';
             description = error;
@@ -14297,9 +14295,12 @@ var AuthRocket = (function () {
           return Promise.reject(error);
         }
         return res;
-      }, function (error) {
-        _utilsLogger2['default'].error({ description: 'Error logging in.', error: error });
-        return Promise.reject(error);
+      }, function (err) {
+        _utilsLogger2['default'].error({ description: 'Error logging in.', error: err, func: 'login', obj: 'AuthRocket' });
+        if (err === 'ENOTFOUND') {
+          err = 'User not found.';
+        }
+        return Promise.reject(err);
       });
     }
 
@@ -14320,7 +14321,7 @@ var AuthRocket = (function () {
         _utilsLogger2['default'].error({ description: 'Token string is required to logout.', func: 'logout', obj: 'AuthRocket' });
         return Promise.reject('Valid token is required to logout.');
       }
-      return _utilsRequest2['default'].post(_config2['default'].urls.js + '/logout', { token: token }).then(function (res) {
+      return _utilsRequest2['default'].post(_config2['default'].urls.js + '/logout', { token: token }, false).then(function (res) {
         if (_lodash2['default'].has(res, 'error') || _lodash2['default'].has(res, 'errno')) {
           _utilsLogger2['default'].error({ description: 'Error logging out.', error: res.error || res.errno, res: res, func: 'logout', obj: 'AuthRocket' });
           return Promise.reject(res.error || res.errno);
@@ -14380,7 +14381,7 @@ var AuthRocket = (function () {
   }, {
     key: 'verify',
     value: function verify(token) {
-      return _utilsRequest2['default'].get(_config2['default'].urls.js + '/sessions/' + token).then(function (res) {
+      return _utilsRequest2['default'].get(_config2['default'].urls.api + '/sessions/' + token).then(function (res) {
         _utilsLogger2['default'].log({ description: 'Token/Session is valid.', res: res, func: 'verify', obj: 'AuthRocket' });
         if (_lodash2['default'].has(res, 'error')) {
           _utilsLogger2['default'].error({ description: 'Error verifying token/session.', error: res.error, res: res, func: 'verify', obj: 'AuthRocket' });
@@ -14688,7 +14689,7 @@ var Config = (function () {
     if (!configInstance) {
       configInstance = this;
     }
-    // console.log({description: 'Config object created.', config: merge(this, defaultConfig), func: 'constructor', obj: 'Config'});
+    console.log({ description: 'Config object created.', config: (0, _lodash.merge)(this, defaultConfig), func: 'constructor', obj: 'Config' });
     return (0, _lodash.merge)(configInstance, defaultConfig);
   }
 
@@ -14885,44 +14886,69 @@ var _superagent2 = _interopRequireDefault(_superagent);
 var _lodash = require('lodash');
 
 var request = {
-	get: function get(endpoint, queryData) {
+	/** Run get request with provided data
+  * @param {String} endpoint - Endpoint to send request to
+  * @param {Object|String} data - Query data
+  * @param {Boolean} includeHeaders - Whether or not to include auth headers
+  * @return {Promise}
+  */
+	get: function get(endpoint, queryData, includeHeaders) {
 		var req = _superagent2['default'].get(endpoint);
 		if (queryData) {
 			req.query(queryData);
 		}
-		req = addAuthRocketHeaders(req);
+		req = attachHeaders(req, includeHeaders);
 		return handleResponse(req);
 	},
-	post: function post(endpoint, data) {
-		var req = _superagent2['default'].post(endpoint).send(data);
-		req = addAuthRocketHeaders(req);
-		return handleResponse(req);
-	},
-	put: function put(endpoint, data) {
-		var req = _superagent2['default'].put(endpoint, data);
-		req = addAuthRocketHeaders(req);
-		return handleResponse(req);
-	},
-	del: function del(endpoint, data) {
-		var req = _superagent2['default'].put(endpoint, data);
-		req = addAuthRocketHeaders(req);
-		return handleResponse(req);
-	},
-	/** Attach AuthRocket request headers and make a request
+	/** Run POST request with provided data
   * @param {String} endpoint - Endpoint to send request to
   * @param {Object|String} data - Request data
+  * @param {Boolean} includeHeaders - Whether or not to include auth headers
   * @return {Promise}
   */
-	withHeaders: function withHeaders(type, url, data) {
-		var req = _superagent2['default'][type](url);
-		req = addAuthRocketHeaders(req);
+	post: function post(endpoint, data, includeHeaders) {
+		var req = _superagent2['default'].post(endpoint).send(data);
+		req = attachHeaders(req, includeHeaders);
+		return handleResponse(req);
+	},
+	/** Run PUT request with provided data
+  * @param {String} endpoint - Endpoint to send request to
+  * @param {Object|String} data - Request data
+  * @param {Boolean} includeHeaders - Whether or not to include auth headers
+  * @return {Promise}
+  */
+	put: function put(endpoint, data, includeHeaders) {
+		var req = _superagent2['default'].put(endpoint, data);
+		req = attachHeaders(req, includeHeaders);
+		return handleResponse(req);
+	},
+	/** Run DELETE request with provided data
+  * @param {String} endpoint - Endpoint to send request to
+  * @param {Object|String} data - Request data
+  * @param {Boolean} includeHeaders - Whether or not to include auth headers
+  * @return {Promise}
+  */
+	del: function del(endpoint, data, includeHeaders) {
+		var req = _superagent2['default'].put(endpoint, data);
+		req = attachHeaders(req, includeHeaders);
 		return handleResponse(req);
 	}
 };
 
 exports['default'] = request;
 
-//Wrap response in promise that has error handling
+/** Attach headers to request
+ * @private
+ */
+function attachHeaders(req, include) {
+	if (typeof include === 'undefined' || include) {
+		return addAuthRocketHeaders(req);
+	}
+	return req;
+}
+/** Wrap response in promise that has error handling
+ * @private
+ */
 function handleResponse(req) {
 	return new Promise(function (resolve, reject) {
 		req.end(function (err, res) {
@@ -14930,25 +14956,29 @@ function handleResponse(req) {
 				// logger.log({description: 'Response:', response:res, func:'handleResponse', file: 'request'});
 				return resolve(res.body);
 			} else {
+				_logger2['default'].warn({ description: 'Error response.', error: err, func: 'handleResponse' });
 				if (err.status == 401) {
 					_logger2['default'].warn({ description: 'Unauthorized. You must be signed into make this request.', func: 'handleResponse' });
 				}
 				if (err && err.response) {
 					return reject(err.response.text);
 				}
-				_logger2['default'].warn({ description: 'Error response.', error: err, func: 'handleResponse' });
+				if (err && err.errno) {
+					// logger.warn({description: 'Does not exist.', error: err, func: 'handleResponse'});
+					return reject(err.errno);
+				}
 				return reject(err);
 			}
 		});
 	});
 }
-//Add auth rocket headers to request
+/** Add auth rocket headers to request
+ * @private
+ */
 function addAuthRocketHeaders(req) {
 	var newReq = req;
-
-	//TODO: Make this work
 	if (!_config2['default'].accountId || !_config2['default'].apiKey || !_config2['default'].realmId) {
-		_logger2['default'].error({ description: 'AccountId, apiKey, and realmId are required.' });
+		_logger2['default'].error({ description: 'AccountId, apiKey, and realmId are required.', func: 'addAuthRocketHeaders' });
 		return req;
 	}
 	var headers = {
@@ -14960,16 +14990,16 @@ function addAuthRocketHeaders(req) {
 		// 'User-agent': 'https://github.com/prescottprue/authrocket' //To provide AuthRocket a contact
 	};
 	_logger2['default'].log({ description: 'addAuthRocketHeaders called.', config: _config2['default'] });
-
 	//Add each header to the request
 	(0, _lodash.each)((0, _lodash.keys)(headers), function (key) {
 		newReq = addHeaderToReq(req, key, headers[key]);
 	});
-	_logger2['default'].log({ description: 'addAuthRocketHeaders request created.', request: newReq });
-
+	_logger2['default'].log({ description: 'addAuthRocketHeaders request created.', func: 'addAuthRocketHeaders' });
 	return newReq;
 }
-//Add header to an existing request
+/** Add header to an existing request
+ * @private
+ */
 function addHeaderToReq(req, headerName, headerVal) {
 	if (!headerName || !headerVal) {
 		_logger2['default'].error({ description: 'Header name and value required to add header to request.', func: 'addHeaderToReq', obj: 'request' });
@@ -14977,14 +15007,6 @@ function addHeaderToReq(req, headerName, headerVal) {
 	}
 	_logger2['default'].log({ description: 'Header value set.', headerName: headerName, headerVal: headerVal });
 	return req.set(headerName, headerVal);
-}
-//Add token to Authorization header if it exists
-function addAuthHeader(req) {
-	// if (token.string) {
-	// 	req = req.set('Authorization', 'Bearer ' + token.string);
-	// 	console.info({message: 'Set auth header', func: 'addAuthHeader', file: 'request'});
-	// }
-	// return req;
 }
 module.exports = exports['default'];
 
