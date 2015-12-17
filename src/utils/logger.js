@@ -1,58 +1,41 @@
 import config from '../config';
 import _ from 'lodash';
 
-//Set default log level to debug
-let logLevel = 'debug';
-//Set log level from config
-if (config.logLevel) {
-	logLevel = config.logLevel;
-}
 let logger = {
 	log(logData) {
 		let msgArgs = buildMessageArgs(logData);
-		if (config.envName == 'production') {
-			runConsoleMethod('log', msgArgs);
-		} else {
+		if (config.logLevel === 'trace') {
 			runConsoleMethod('log', msgArgs);
 		}
 	},
-	info(logData) {
+	debug(logData) {
 		let msgArgs = buildMessageArgs(logData);
-		if (config.envName == 'production') {
-			runConsoleMethod('info', msgArgs);
-		} else {
+		if (config.logLevel === 'trace' || config.logLevel === 'debug') {
+			runConsoleMethod('debug', msgArgs);
+		}
+	},
+	info(logData) {
+		if (config.logLevel === 'trace'  || config.logLevel === 'debug' || config.logLevel === 'info') {
+			let msgArgs = buildMessageArgs(logData);
 			runConsoleMethod('info', msgArgs);
 		}
 	},
 	warn(logData) {
 		let msgArgs = buildMessageArgs(logData);
-		if (config.envName == 'production') {
+		if (config.logLevel === 'trace' || config.logLevel === 'debug' || config.logLevel === 'info' || config.logLevel === 'warn') {
 			runConsoleMethod('warn', msgArgs);
-		} else {
-			runConsoleMethod('warn', msgArgs);
-		}
-	},
-	debug(logData) {
-		let msgArgs = buildMessageArgs(logData);
-		if (config.envName == 'production') {
-			// runConsoleMethod('debug', msgArgs);
-			//Do not display console debugs in production
-		} else {
-			runConsoleMethod('debug', msgArgs);
 		}
 	},
 	error(logData) {
 		let msgArgs = buildMessageArgs(logData);
-		if (config.envName == 'production') {
-			//TODO: Log to external logger
-			runConsoleMethod('error', msgArgs);
-		} else {
+		if (config.logLevel === 'trace' || config.logLevel === 'debug' || config.logLevel === 'info' || config.logLevel === 'warn' || config.logLevel === 'error' || config.logLevel === 'fatal') {
 			runConsoleMethod('error', msgArgs);
 		}
 	}
 };
 
 export default logger;
+
 function runConsoleMethod(methodName, methodData) {
 	//Safley run console methods or use console log
 	if (methodName && console[methodName]) {
@@ -67,7 +50,7 @@ function buildMessageArgs(logData) {
 	//TODO: Attach time stamp
 	//Attach location information to the beginning of message
 	if (_.isObject(logData)) {
-		if (logLevel == 'debug') {
+		if (config.logLevel == 'debug') {
 			if (_.has(logData, 'func')) {
 				if (_.has(logData, 'obj')) {
 					//Object and function provided
@@ -80,7 +63,7 @@ function buildMessageArgs(logData) {
 			}
 		}
 		//Print each key and its value other than obj and func
-		_.each(_.omit(_.keys(logData)), (key, ind, list) => {
+		_.each(_.omit(_.keys(logData)), (key) => {
 			if (key != 'func' && key != 'obj') {
 				if (key == 'description' || key == 'message') {
 					msgStr += logData[key];

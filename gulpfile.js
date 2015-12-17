@@ -152,8 +152,6 @@ createLintTask('lint-src', ['src/**/*.js']);
 // Lint our test code
 createLintTask('lint-test', ['test/**/*.js', '!test/coverage/**']);
 
-
-
 // An alias of test
 gulp.task('default', ['test', 'build']);
 

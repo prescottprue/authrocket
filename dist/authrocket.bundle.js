@@ -14275,13 +14275,22 @@ var AuthRocket = (function () {
     key: 'login',
     value: function login(loginData) {
       if (!_lodash2['default'].has(loginData, 'username') || !_lodash2['default'].has(loginData, 'password')) {
-        _utilsLogger2['default'].error({ description: 'Username and password are required to login.', func: 'login', obj: 'AuthRocket' });
+        _utilsLogger2['default'].error({
+          description: 'Username and password are required to login.',
+          func: 'login', obj: 'AuthRocket'
+        });
         return Promise.reject('Username/Email and password are required.');
       }
-      _utilsLogger2['default'].log({ description: 'Calling login.', url: _config2['default'].urls.js + '/login', loginData: loginData, func: 'login', obj: 'AuthRocket' });
+      _utilsLogger2['default'].log({
+        description: 'Calling login.', url: _config2['default'].urls.js + '/login',
+        loginData: loginData, func: 'login', obj: 'AuthRocket'
+      });
       return _utilsRequest2['default'].post(_config2['default'].urls.js + '/login', loginData, false).then(function (res) {
         if (_lodash2['default'].has(res, 'error')) {
-          _utilsLogger2['default'].error({ description: 'Error logging in.', error: res.error, res: res, func: 'login', obj: 'AuthRocket' });
+          _utilsLogger2['default'].error({
+            description: 'Error logging in.', error: res.error,
+            res: res, func: 'login', obj: 'AuthRocket'
+          });
           return Promise.reject(res.error);
         }
         if (_lodash2['default'].has(res, 'errno')) {
@@ -14291,12 +14300,18 @@ var AuthRocket = (function () {
             error = 'User not found.';
             description = error;
           }
-          _utilsLogger2['default'].error({ description: error, error: res.errno, res: res, func: 'login', obj: 'AuthRocket' });
+          _utilsLogger2['default'].error({
+            description: error, error: res.errno, res: res,
+            func: 'login', obj: 'AuthRocket'
+          });
           return Promise.reject(error);
         }
         return res;
       }, function (err) {
-        _utilsLogger2['default'].error({ description: 'Error logging in.', error: err, func: 'login', obj: 'AuthRocket' });
+        _utilsLogger2['default'].error({
+          description: 'Error logging in.', error: err,
+          func: 'login', obj: 'AuthRocket'
+        });
         if (err === 'ENOTFOUND') {
           err = 'User not found.';
         }
@@ -14318,18 +14333,29 @@ var AuthRocket = (function () {
     key: 'logout',
     value: function logout(token) {
       if (!token || !_lodash2['default'].isString(token)) {
-        _utilsLogger2['default'].error({ description: 'Token string is required to logout.', func: 'logout', obj: 'AuthRocket' });
+        _utilsLogger2['default'].error({
+          description: 'Token string is required to logout.',
+          func: 'logout', obj: 'AuthRocket'
+        });
         return Promise.reject('Valid token is required to logout.');
       }
       return _utilsRequest2['default'].post(_config2['default'].urls.js + '/logout', { token: token }, false).then(function (res) {
         if (_lodash2['default'].has(res, 'error') || _lodash2['default'].has(res, 'errno')) {
-          _utilsLogger2['default'].error({ description: 'Error logging out.', error: res.error || res.errno, res: res, func: 'logout', obj: 'AuthRocket' });
+          _utilsLogger2['default'].error({
+            description: 'Error logging out.', error: res.error || res.errno,
+            res: res, func: 'logout', obj: 'AuthRocket'
+          });
           return Promise.reject(res.error || res.errno);
         }
-        _utilsLogger2['default'].log({ description: 'Successful logout.', res: res, func: 'logout', obj: 'AuthRocket' });
+        _utilsLogger2['default'].log({
+          description: 'Successful logout.', res: res,
+          func: 'logout', obj: 'AuthRocket'
+        });
         return res;
       }, function (err) {
-        _utilsLogger2['default'].error({ description: 'Error logging out.', error: err });
+        _utilsLogger2['default'].error({
+          description: 'Error logging out.', error: err
+        });
         return Promise.reject(err);
       });
     }
@@ -14351,18 +14377,30 @@ var AuthRocket = (function () {
     key: 'signup',
     value: function signup(signupData) {
       if (!_lodash2['default'].has(signupData, 'username') && !_lodash2['default'].has(signupData, 'email') || !_lodash2['default'].has(signupData, 'username')) {
-        _utilsLogger2['default'].error({ description: 'Username/Email and password are required to login.', func: 'login', obj: 'AuthRocket' });
+        _utilsLogger2['default'].error({
+          description: 'Username/Email and password are required to login.',
+          func: 'login', obj: 'AuthRocket'
+        });
         return Promise.reject('Username/Email and password are required.');
       }
       return _utilsRequest2['default'].post(_config2['default'].urls.js + '/signup', signupData).then(function (res) {
         if (_lodash2['default'].has(res, 'error') || _lodash2['default'].has(res, 'errno')) {
-          _utilsLogger2['default'].error({ description: 'Error signing up.', error: res.error || res.errno, res: res, func: 'signup', obj: 'AuthRocket' });
+          _utilsLogger2['default'].error({
+            description: 'Error signing up.', error: res.error || res.errno,
+            res: res, func: 'signup', obj: 'AuthRocket'
+          });
           return Promise.reject(res.error || res.errno);
         }
-        _utilsLogger2['default'].log({ description: 'Successful signup', res: res, func: 'signup', obj: 'AuthRocket' });
+        _utilsLogger2['default'].log({
+          description: 'Successful signup', res: res,
+          func: 'signup', obj: 'AuthRocket'
+        });
         return res;
       }, function (err) {
-        _utilsLogger2['default'].error({ description: 'Error signing up.', error: err, func: 'signup', obj: 'AuthRocket' });
+        _utilsLogger2['default'].error({
+          description: 'Error signing up.', error: err,
+          func: 'signup', obj: 'AuthRocket'
+        });
         return Promise.reject(err);
       });
     }
@@ -14382,14 +14420,23 @@ var AuthRocket = (function () {
     key: 'verify',
     value: function verify(token) {
       return _utilsRequest2['default'].get(_config2['default'].urls.api + '/sessions/' + token).then(function (res) {
-        _utilsLogger2['default'].log({ description: 'Token/Session is valid.', res: res, func: 'verify', obj: 'AuthRocket' });
+        _utilsLogger2['default'].log({
+          description: 'Token/Session is valid.', res: res,
+          func: 'verify', obj: 'AuthRocket'
+        });
         if (_lodash2['default'].has(res, 'error')) {
-          _utilsLogger2['default'].error({ description: 'Error verifying token/session.', error: res.error, res: res, func: 'verify', obj: 'AuthRocket' });
+          _utilsLogger2['default'].error({
+            description: 'Error verifying token/session.',
+            error: res.error, res: res, func: 'verify', obj: 'AuthRocket'
+          });
           return Promise.reject(res.error);
         }
         return res;
       }, function (err) {
-        _utilsLogger2['default'].error({ description: 'Token/Session is invalid.', error: err, func: 'verify', obj: 'AuthRocket' });
+        _utilsLogger2['default'].error({
+          description: 'Token/Session is invalid.', error: err,
+          func: 'verify', obj: 'AuthRocket'
+        });
         return Promise.reject(err);
       });
     }
@@ -14663,7 +14710,7 @@ module.exports = exports['default'];
 },{"../config":9,"../utils/logger":10,"../utils/request":11,"lodash":2}],9:[function(require,module,exports){
 (function (process){
 Object.defineProperty(exports, '__esModule', {
-  value: true
+	value: true
 });
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -14673,62 +14720,86 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var _lodash = require('lodash');
 
 var defaultConfig = {
-  accountId: process.env.AUTHROCKET_ACCOUNT_ID,
-  apiKey: process.env.AUTHROCKET_API_KEY,
-  realmId: process.env.AUTHROCKET_REALM_ID,
-  jwtSecret: process.env.AUTHROCKET_JWT_SECRET,
-  apiUrl: process.env.AUTHROCKET_API_URL || 'https://api-e1.authrocket.com/v1/',
-  jsUrl: process.env.AUTHROCKET_JS_URL
+	accountId: process.env.AUTHROCKET_ACCOUNT_ID,
+	apiKey: process.env.AUTHROCKET_API_KEY,
+	realmId: process.env.AUTHROCKET_REALM_ID,
+	jwtSecret: process.env.AUTHROCKET_JWT_SECRET,
+	apiUrl: process.env.AUTHROCKET_API_URL || 'https://api-e1.authrocket.com/v1/',
+	jsUrl: process.env.AUTHROCKET_JS_URL
 };
+var envName = 'prod';
+var level = null;
 var configInstance = null; //Singleton variable
 
 var Config = (function () {
-  function Config() {
-    _classCallCheck(this, Config);
+	function Config() {
+		_classCallCheck(this, Config);
 
-    if (!configInstance) {
-      configInstance = this;
-    }
-    console.log({ description: 'Config object created.', config: (0, _lodash.merge)(this, defaultConfig), func: 'constructor', obj: 'Config' });
-    return (0, _lodash.merge)(configInstance, defaultConfig);
-  }
+		if (!configInstance) {
+			configInstance = this;
+		}
+		return (0, _lodash.merge)(configInstance, defaultConfig);
+	}
 
-  _createClass(Config, [{
-    key: 'applySettings',
-    value: function applySettings(settingsData) {
-      var _this = this;
+	_createClass(Config, [{
+		key: 'applySettings',
+		value: function applySettings(settingsData) {
+			var _this = this;
 
-      (0, _lodash.each)((0, _lodash.keys)(settingsData), function (key) {
-        _this[key] = settingsData[key];
-      });
-    }
+			(0, _lodash.each)((0, _lodash.keys)(settingsData), function (key) {
+				_this[key] = settingsData[key];
+			});
+		}
 
-    //Map getters that handle removing trailing slash of urls
-  }, {
-    key: 'urls',
-    get: function get() {
-      var jsUrl = this.jsUrl;
-      var apiUrl = this.apiUrl;
-      return Object.defineProperties({}, {
-        api: {
-          get: function get() {
-            return apiUrl ? removeTrailingSlash(apiUrl) : null;
-          },
-          configurable: true,
-          enumerable: true
-        },
-        js: {
-          get: function get() {
-            return jsUrl ? removeTrailingSlash(jsUrl) : null;
-          },
-          configurable: true,
-          enumerable: true
-        }
-      });
-    }
-  }]);
+		//Map getters that handle removing trailing slash of urls
+	}, {
+		key: 'logLevel',
+		set: function set(setLevel) {
+			level = setLevel;
+		},
+		get: function get() {
+			if (level) {
+				return level;
+			}
+			return defaultConfig.envs[envName].logLevel;
+		}
+	}, {
+		key: 'envName',
+		set: function set(newEnv) {
+			envName = newEnv;
+			// this.envName = newEnv;
+			// console.log('Environment name set:', envName);
+		}
+	}, {
+		key: 'env',
+		get: function get() {
+			return defaultConfig.envs[envName];
+		}
+	}, {
+		key: 'urls',
+		get: function get() {
+			var jsUrl = this.jsUrl;
+			var apiUrl = this.apiUrl;
+			return Object.defineProperties({}, {
+				api: {
+					get: function get() {
+						return apiUrl ? removeTrailingSlash(apiUrl) : null;
+					},
+					configurable: true,
+					enumerable: true
+				},
+				js: {
+					get: function get() {
+						return jsUrl ? removeTrailingSlash(jsUrl) : null;
+					},
+					configurable: true,
+					enumerable: true
+				}
+			});
+		}
+	}]);
 
-  return Config;
+	return Config;
 })();
 
 var config = new Config();
@@ -14736,11 +14807,14 @@ var config = new Config();
 exports['default'] = config;
 
 function removeTrailingSlash(url) {
-  if (!(0, _lodash.isString)(url)) {
-    logger.error({ description: 'Slash can only be removed from strings.', func: 'removeTrailingSlash', file: 'config' });
-    return url;
-  }
-  return url.replace(/\/$/, '');
+	if (!(0, _lodash.isString)(url)) {
+		logger.error({
+			description: 'Slash can only be removed from strings.',
+			func: 'removeTrailingSlash', file: 'config'
+		});
+		return url;
+	}
+	return url.replace(/\/$/, '');
 }
 module.exports = exports['default'];
 
@@ -14760,52 +14834,34 @@ var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
-//Set default log level to debug
-var logLevel = 'debug';
-//Set log level from config
-if (_config2['default'].logLevel) {
-	logLevel = _config2['default'].logLevel;
-}
 var logger = {
 	log: function log(logData) {
 		var msgArgs = buildMessageArgs(logData);
-		if (_config2['default'].envName == 'production') {
-			runConsoleMethod('log', msgArgs);
-		} else {
+		if (_config2['default'].logLevel === 'trace') {
 			runConsoleMethod('log', msgArgs);
 		}
 	},
-	info: function info(logData) {
+	debug: function debug(logData) {
 		var msgArgs = buildMessageArgs(logData);
-		if (_config2['default'].envName == 'production') {
-			runConsoleMethod('info', msgArgs);
-		} else {
+		if (_config2['default'].logLevel === 'trace' || _config2['default'].logLevel === 'debug') {
+			runConsoleMethod('debug', msgArgs);
+		}
+	},
+	info: function info(logData) {
+		if (_config2['default'].logLevel === 'trace' || _config2['default'].logLevel === 'debug' || _config2['default'].logLevel === 'info') {
+			var msgArgs = buildMessageArgs(logData);
 			runConsoleMethod('info', msgArgs);
 		}
 	},
 	warn: function warn(logData) {
 		var msgArgs = buildMessageArgs(logData);
-		if (_config2['default'].envName == 'production') {
-			runConsoleMethod('warn', msgArgs);
-		} else {
+		if (_config2['default'].logLevel === 'trace' || _config2['default'].logLevel === 'debug' || _config2['default'].logLevel === 'info' || _config2['default'].logLevel === 'warn') {
 			runConsoleMethod('warn', msgArgs);
 		}
 	},
-	debug: function debug(logData) {
-		var msgArgs = buildMessageArgs(logData);
-		if (_config2['default'].envName == 'production') {
-			// runConsoleMethod('debug', msgArgs);
-			//Do not display console debugs in production
-		} else {
-				runConsoleMethod('debug', msgArgs);
-			}
-	},
 	error: function error(logData) {
 		var msgArgs = buildMessageArgs(logData);
-		if (_config2['default'].envName == 'production') {
-			//TODO: Log to external logger
-			runConsoleMethod('error', msgArgs);
-		} else {
+		if (_config2['default'].logLevel === 'trace' || _config2['default'].logLevel === 'debug' || _config2['default'].logLevel === 'info' || _config2['default'].logLevel === 'warn' || _config2['default'].logLevel === 'error' || _config2['default'].logLevel === 'fatal') {
 			runConsoleMethod('error', msgArgs);
 		}
 	}
@@ -14827,7 +14883,7 @@ function buildMessageArgs(logData) {
 	//TODO: Attach time stamp
 	//Attach location information to the beginning of message
 	if (_lodash2['default'].isObject(logData)) {
-		if (logLevel == 'debug') {
+		if (_config2['default'].logLevel == 'debug') {
 			if (_lodash2['default'].has(logData, 'func')) {
 				if (_lodash2['default'].has(logData, 'obj')) {
 					//Object and function provided
@@ -14840,7 +14896,7 @@ function buildMessageArgs(logData) {
 			}
 		}
 		//Print each key and its value other than obj and func
-		_lodash2['default'].each(_lodash2['default'].omit(_lodash2['default'].keys(logData)), function (key, ind, list) {
+		_lodash2['default'].each(_lodash2['default'].omit(_lodash2['default'].keys(logData)), function (key) {
 			if (key != 'func' && key != 'obj') {
 				if (key == 'description' || key == 'message') {
 					msgStr += logData[key];

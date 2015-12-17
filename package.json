@@ -15,6 +15,7 @@
     ]
   },
   "scripts": {
+    "build": "gulp build",
     "start": "gulp"
   },
   "repository": {
