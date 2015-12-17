@@ -1,6 +1,6 @@
 {
   "name": "authrocket",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Library for interfacing with AuthRocket service.",
   "main": "dist/authrocket.js",
   "jsnext:main": "src/authrocket.js",
@@ -16,6 +16,7 @@
   },
   "scripts": {
     "build": "gulp build",
+    "test": "gulp test",
     "start": "gulp"
   },
   "repository": {
