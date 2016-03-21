@@ -2,12 +2,5 @@ examples
 docs
 test
 .codeclimate.yml
-.eslintignore
-.eslintrc
-.jscsrc
-.jshintrc
 .travis.yml
 config.json
-esdoc.json
-karma.conf.js
-gulpfile.js
