@@ -1,31 +1,14 @@
 # AuthRocket
 
-<p align="center">
-  <!-- Npm Version -->
-  <a href="https://npmjs.org/package/authrocket">
-    <img src="https://img.shields.io/npm/v/authrocket.svg" alt="npm version">
-  </a>
-  <!-- Build Status -->
-  <a href="https://travis-ci.org/prescottprue/authrocket">
-    <img src="http://img.shields.io/travis/prescottprue/authrocket.svg" alt="build status">
-  </a>
-  <!-- Dependency Status -->
-  <a href="https://david-dm.org/prescottprue/authrocket">
-    <img src="https://david-dm.org/prescottprue/authrocket.svg" alt="dependency status">
-  </a>
-  <!-- Codeclimate -->
-  <a href="https://codeclimate.com/github/prescottprue/authrocket">
-    <img src="https://codeclimate.com/github/prescottprue/authrocket/badges/gpa.svg" alt="codeclimate">
-  </a>
-  <!-- Coverage -->
-  <a href="https://codeclimate.com/github/prescottprue/authrocket">
-    <img src="https://codeclimate.com/github/prescottprue/authrocket/badges/coverage.svg" alt="coverage">
-  </a>
-  <!-- License -->
-  <a href="https://github.com/prescottprue/authrocket/blob/master/LICENSE.md">
-    <img src="https://img.shields.io/npm/l/authrocket.svg" alt="license">
-  </a>
-</p>
+[![NPM version][npm-image]][npm-url]
+[![NPM downloads][npm-downloads-image]][npm-url]
+[![Build Status][travis-image]][travis-url]
+[![Dependency Status][daviddm-image]][daviddm-url]
+[![Code Climate][climate-image]][climate-url]
+[![Code Coverage][coverage-image]][coverage-url]
+[![License][license-image]][license-url]
+[![Code Style][code-style-image]][code-style-url]
+
 NodeJS library for interfacing with [Auth Rocket](https://authrocket.com/).
 
 ## Why Not Use AuthRocket's `authrocket.js`?
@@ -41,15 +24,6 @@ Documentation is automatically generated from comments using [gulp-esdoc](https:
 1. Install through npm: `npm install --save authrocket`
 2. Import AuthRocket:
 
-  **Browser**
-  ```html
-  <script src="node_modules/authrocket/dist/authrocket.js"></script>
-  <!--
-  Also available through CDN using:
-  <script src="http://cdn.prue.io/authrocket/latest/authrocket.js"></script>
-  -->
-  ```
-
   **NodeJS**
   ```javascript
   var AuthRocket = require('authrocket');
@@ -58,6 +32,16 @@ Documentation is automatically generated from comments using [gulp-esdoc](https:
   **ES6**
   ```javascript
   import AuthRocket from 'authrocket';
+  ```
+
+  **Browser**
+
+  ```html
+  <script src="node_modules/authrocket/dist/authrocket.js"></script>
+  <!--
+  Also available through CDN using:
+  <script src="http://cdn.prue.io/authrocket/latest/authrocket.js"></script>
+  -->
   ```
 
 3. Create a new AuthRocket instance:
@@ -102,3 +86,20 @@ Environment Variable: `AUTHROCKET_API_URL`
 Options Variable: `jwtSecret`
 
 Environment Variable: `AUTHROCKET_JWT_SECRET`
+
+
+[npm-image]: https://img.shields.io/npm/v/authrocket.svg?style=flat-square
+[npm-url]: https://npmjs.org/package/authrocket
+[npm-downloads-image]: https://img.shields.io/npm/dm/authrocket.svg?style=flat-square
+[travis-image]: https://img.shields.io/travis/prescottprue/authrocket/master.svg?style=flat-square
+[travis-url]: https://travis-ci.org/prescottprue/authrocket
+[daviddm-image]: https://img.shields.io/david/prescottprue/authrocket.svg?style=flat-square
+[daviddm-url]: https://david-dm.org/prescottprue/authrocket
+[climate-image]: https://img.shields.io/codeclimate/github/prescottprue/authrocket.svg?style=flat-square
+[climate-url]: https://codeclimate.com/github/prescottprue/authrocket
+[coverage-image]: https://img.shields.io/codeclimate/coverage/github/prescottprue/authrocket.svg?style=flat-square
+[coverage-url]: https://codeclimate.com/github/prescottprue/authrocket
+[license-image]: https://img.shields.io/npm/l/authrocket.svg?style=flat-square
+[license-url]: https://github.com/prescottprue/authrocket/blob/master/LICENSE
+[code-style-image]: https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square
+[code-style-url]: http://standardjs.com/
