@@ -1,12 +1,16 @@
 {
-	"distFolder":"dist",
+	"distFolder": "dist",
+	"library": {
+		"export": "AuthRocket",
+		"file": "authrocket"
+	},
 	"folders": {
 		"dist": "dist",
 		"dev": "dev",
 		"docs": "docs"
 	},
 	"cdn":{
-		"bucketName":"prue-cdn",
-		"path":"authrocket"
+		"bucket":"prue-cdn",
+		"prefix":"authrocket"
 	}
 }

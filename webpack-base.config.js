@@ -1,21 +1,21 @@
 'use strict'
 var webpack = require('webpack')
 var pkg = require('./package.json')
+var config = require('./config.json')
 
 module.exports = {
   module: {
     loaders: [
-      { test: /\.js$/, loaders: [ 'babel' ], exclude: [ /node_modules/ ] },
-      { test: /\.json$/, loaders: [ 'json' ], exclude: [] }
+      { test: /\.js$/, loaders: [ 'babel' ], exclude: [ /node_modules/ ] }
     ]
   },
   plugins: [
-    new webpack.BannerPlugin('authrocket.js v' + pkg.version + ' | (c) Prescott Prue ', {raw: false, entryOnly: true})
+    new webpack.BannerPlugin(`${config.library.file}.js v ${pkg.version} | (c) Prescott Prue `, { raw: false, entryOnly: true })
   ],
   output: {
-    library: 'AuthRocket',
+    library: config.library.export,
     libraryTarget: 'umd',
-    publicPath: '/dist/'
+    publicPath: `/${config.folders.dist}/`
   },
   resolve: {
     extensions: ['', '.js']
