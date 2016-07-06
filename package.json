@@ -18,7 +18,7 @@
     "watch:lib": "npm run build:lib -- --stats --progress --colors --watch",
     "watch": "npm run watch:umd",
     "prepublish": "npm run clean && npm run test && npm run build",
-    "upload": "node ./bin/upload",
+    "upload": "node ./bin/upload"
   },
   "repository": {
     "type": "git",
