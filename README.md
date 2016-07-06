@@ -16,10 +16,9 @@ NodeJS library for interfacing with [Auth Rocket](https://authrocket.com/).
 [Authrocket.js](https://authrocket.com/docs/js/authrocket_js) requires including jQuery and is therefore not a useful solution for running on NodeJS or within a front end project that doesn't use jQuery. Also, the API for the default AuthRocket library only provides methods for LoginRocket actions as it is for client side usage only.
 
 **Warning**: Not officially supported by Auth Rocket.
-## Documentation
-Documentation is automatically generated from comments using [gulp-esdoc](https://www.npmjs.com/package/gulp-esdoc). To view a hosted version of the documentation view the docs page.
 
-### [Docs Page](https://cdn.prue.io/authrocket/latest/docs/class/src/authrocket.js~AuthRocket.html)
+### [Docs Page](https://prescottprue.gitbooks.io/authrocket/content/)
+
 ## Getting Started
 1. Install through npm: `npm install --save authrocket`
 2. Import AuthRocket:

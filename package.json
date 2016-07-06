@@ -5,6 +5,8 @@
   "main": "dist/authrocket.js",
   "jsnext:main": "src/authrocket.js",
   "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "npm run lint -- --fix",
     "clean": "rimraf lib dist coverage",
     "test": "mocha -R spec --compilers js:babel-core/register ./test/setup.js ./test/**/*.spec.js",
     "test:cov": "babel-node $(npm bin)/isparta cover --report lcov ./node_modules/mocha/bin/_mocha -- ./test --recursive",
@@ -16,12 +18,7 @@
     "watch:lib": "npm run build:lib -- --stats --progress --colors --watch",
     "watch": "npm run watch:umd",
     "prepublish": "npm run clean && npm run test && npm run build",
-    "upload": "node ./bin/upload",
-    "docs:clean": "rimraf _book",
-    "docs:prepare": "gitbook install",
-    "docs:build": "npm run docs:prepare && gitbook build -g prescottprue/authrocket",
-    "docs:watch": "npm run docs:prepare && gitbook serve",
-    "docs:publish": "npm run docs:clean && npm run docs:build && cd _book && git init && git commit --allow-empty -m 'update book' && git checkout -b gh-pages && touch .nojekyll && git add . && git commit -am 'update book' && git push git@github.com:prescottprue/authrocket gh-pages --force"
+    "upload": "node ./bin/upload"
   },
   "repository": {
     "type": "git",
@@ -32,27 +29,33 @@
     "rocket",
     "authrocket",
     "authentication",
-    "user management",
-    "tessellate"
+    "user management"
   ],
   "author": "Prescott Prue <sprue.dev@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "lodash": "4.6.1",
+    "lodash": "4.13.1",
     "superagent": "1.8.1"
   },
   "devDependencies": {
     "babel": "^6.5.1",
-    "babel-cli": "^6.5.1",
-    "babel-core": "^6.7.0",
+    "babel-cli": "^6.6.5",
+    "babel-core": "^6.7.2",
+    "babel-eslint": "^6.1.0",
     "babel-loader": "^6.2.2",
-    "babel-plugin-add-module-exports": "^0.1.2",
+    "babel-plugin-add-module-exports": "^0.2.1",
     "babel-plugin-lodash": "^2.2.1",
     "babel-preset-es2015": "^6.6.0",
     "babel-preset-stage-0": "^6.5.0",
     "browser-sync": "^2.9.3",
     "chai": "^3.5.0",
     "chai-as-promised": "^5.2.0",
+    "eslint": "^2.13.1",
+    "eslint-config-standard": "^5.1.0",
+    "eslint-config-standard-react": "^2.2.0",
+    "eslint-plugin-babel": "^3.2.0",
+    "eslint-plugin-promise": "^1.0.8",
+    "eslint-plugin-standard": "^1.3.1",
     "es6-promise": "^3.0.2",
     "isparta": "^4.0.0",
     "mocha": "^2.4.5",
