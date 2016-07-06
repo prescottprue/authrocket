@@ -1,0 +1,12 @@
+{
+  "parser"  : "babel-eslint",
+  "extends" : [
+    "standard"
+  ],
+  "plugins": [
+    "babel"
+  ],
+  "rules": {
+    "no-return-assign": "off"
+  }
+}

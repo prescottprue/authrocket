@@ -2,8 +2,8 @@
 import config from './config'
 import { has, isString } from 'lodash'
 import request from './utils/request'
-import logger from './utils/logger'
 import * as Actions from './actions'
+
 export default class AuthRocket {
   constructor (settings) {
     if (settings && isString(settings)) {
@@ -13,6 +13,7 @@ export default class AuthRocket {
       config.applySettings(settings)
     }
   }
+
   /** Login as a user
    * @param {Object} loginData - Object containing data to signup with
    * @param {String} loginData.email - Email of new user
@@ -28,47 +29,17 @@ export default class AuthRocket {
    */
   login (loginData) {
     if (!has(loginData, 'username') || !has(loginData, 'password')) {
-      logger.error({
-        description: 'Username and password are required to login.',
-        func: 'login', obj: 'AuthRocket'
-      })
       return Promise.reject('Username/Email and password are required.')
     }
-    logger.log({
-      description: 'Calling login.', url: `${config.urls.js}/login`,
-      loginData: loginData, func: 'login', obj: 'AuthRocket'
-    })
-    return request.post(`${config.urls.js}/login`, loginData, false).then((res) => {
-      if (has(res, 'error')) {
-        logger.error({
-          description: 'Error logging in.', error: res.error,
-          res: res, func: 'login', obj: 'AuthRocket'
-        })
-        return Promise.reject(res.error)
-      }
-      if (has(res, 'errno')) {
-        let error = res.errno
-        if (error === 'ENOTFOUND') {
-          error = 'User not found.'
-          description = error
-        }
-        logger.error({
-          description: error, error: res.errno, res: res,
-          func: 'login', obj: 'AuthRocket'
-        })
-        return Promise.reject(error)
-      }
-      return res
-    }, err => {
-      logger.error({
-        description: 'Error logging in.', error: err,
-        func: 'login', obj: 'AuthRocket'
-      })
-      if (err === 'ENOTFOUND') {
-        err = 'User not found.'
-      }
-      return Promise.reject(err)
-    })
+    return request.post(`${config.urls.js}/login`, loginData, false)
+      .then((res) =>
+        (res.error || res.errno)
+        ? Promise.reject(res.errno ? 'User not found.' : res.error)
+        : res
+      )
+      .catch(err =>
+        Promise.reject(err === 'ENOTFOUND' ? 'User not found.' : err)
+      )
   }
   /** Logout a user
    * @param {String} token - String JWT token of logged in user
@@ -82,31 +53,14 @@ export default class AuthRocket {
    */
   logout (token) {
     if (!token || !isString(token)) {
-      logger.error({
-        description: 'Token string is required to logout.',
-        func: 'logout', obj: 'AuthRocket'
-      })
       return Promise.reject('Valid token is required to logout.')
     }
-    return request.post(`${config.urls.js}/logout`, {token: token}, false).then(res => {
-      if (has(res, 'error') || has(res, 'errno')) {
-        logger.error({
-          description: 'Error logging out.', error: res.error || res.errno,
-          res: res, func: 'logout', obj: 'AuthRocket'
-        })
-        return Promise.reject(res.error || res.errno)
-      }
-      logger.log({
-        description: 'Successful logout.', res: res,
-        func: 'logout', obj: 'AuthRocket'
-      })
-      return res
-    }, (err) => {
-      logger.error({
-        description: 'Error logging out.', error: err
-      })
-      return Promise.reject(err)
-    })
+    return request.post(`${config.urls.js}/logout`, { token }, false)
+      .then(res => (res.error || res.errno)
+        ? Promise.reject(res.error || res.errno)
+        : res
+      )
+      .catch(err => Promise.reject(err))
   }
   /** Signup a new user
    * @param {Object} signupData - Object containing data to signup with
@@ -122,33 +76,16 @@ export default class AuthRocket {
    * })
    */
   signup (signupData) {
-    if ((!has(signupData, 'username') && !has(signupData, 'email')) || !has(signupData, 'username')) {
-      logger.error({
-        description: 'Username/Email and password are required to login.',
-        func: 'login', obj: 'AuthRocket'
-      })
+    const { username, email, password } = signupData
+    if ((!username && !email) || !password) {
       return Promise.reject('Username/Email and password are required.')
     }
-    return request.post(`${config.urls.js}/signup`, signupData).then((res) => {
-      if (has(res, 'error') || has(res, 'errno')) {
-        logger.error({
-          description: 'Error signing up.', error: res.error || res.errno,
-          res: res, func: 'signup', obj: 'AuthRocket'
-        })
-        return Promise.reject(res.error || res.errno)
-      }
-      logger.log({
-        description: 'Successful signup', res: res,
-        func: 'signup', obj: 'AuthRocket'
-      })
-      return res
-    }, (err) => {
-      logger.error({
-        description: 'Error signing up.', error: err,
-        func: 'signup', obj: 'AuthRocket'
-      })
-      return Promise.reject(err)
-    })
+    return request.post(`${config.urls.js}/signup`, signupData)
+      .then((res) => (res.error || res.errno)
+        ? Promise.reject(res.error || res.errno)
+        : res
+      )
+      .catch((err) => Promise.reject(err))
   }
   /** Verify an existing token is valid
    * @param {String} token - JSON Web Token to verify
@@ -162,26 +99,9 @@ export default class AuthRocket {
    * })
    */
   verify (token) {
-    return request.get(`${config.urls.api}/sessions/${token}`).then((res) => {
-      logger.log({
-        description: 'Token/Session is valid.', res: res,
-        func: 'verify', obj: 'AuthRocket'
-      })
-      if (has(res, 'error')) {
-        logger.error({
-          description: 'Error verifying token/session.',
-          error: res.error, res: res, func: 'verify', obj: 'AuthRocket'
-        })
-        return Promise.reject(res.error)
-      }
-      return res
-    }, (err) => {
-      logger.error({
-        description: 'Token/Session is invalid.', error: err,
-        func: 'verify', obj: 'AuthRocket'
-      })
-      return Promise.reject(err)
-    })
+    return request.get(`${config.urls.api}/sessions/${token}`)
+      .then((res) => Promise.reject(res.error) || res)
+      .catch((err) => Promise.reject(err))
   }
   /** Realms action namespace
    *

@@ -276,3 +276,5 @@ export class Notifications extends Action {
     super('notifications', actionData)
   }
 }
+
+export default { Realms, Users, Credentials, SignupTokens, Orgs, Memberships, AuthProviders, ConnectedApps, Hooks, Sessions, Events, Notifications }
