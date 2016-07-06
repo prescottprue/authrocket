@@ -17,7 +17,8 @@ NodeJS library for interfacing with [Auth Rocket](https://authrocket.com/).
 
 **Warning**: Not officially supported by Auth Rocket.
 
-### [Docs Page](https://cdn.prue.io/authrocket/latest/docs/class/src/authrocket.js~AuthRocket.html)
+### [Docs Page](https://prescottprue.gitbooks.io/authrocket/content/)
+
 ## Getting Started
 1. Install through npm: `npm install --save authrocket`
 2. Import AuthRocket:

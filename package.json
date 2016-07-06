@@ -19,11 +19,6 @@
     "watch": "npm run watch:umd",
     "prepublish": "npm run clean && npm run test && npm run build",
     "upload": "node ./bin/upload",
-    "docs:clean": "rimraf _book",
-    "docs:prepare": "gitbook install",
-    "docs:build": "npm run docs:prepare && gitbook build -g prescottprue/authrocket",
-    "docs:watch": "npm run docs:prepare && gitbook serve",
-    "docs:publish": "npm run docs:clean && npm run docs:build && cd _book && git init && git commit --allow-empty -m 'update book' && git checkout -b gh-pages && touch .nojekyll && git add . && git commit -am 'update book' && git push git@github.com:prescottprue/authrocket gh-pages --force"
   },
   "repository": {
     "type": "git",
@@ -34,8 +29,7 @@
     "rocket",
     "authrocket",
     "authentication",
-    "user management",
-    "tessellate"
+    "user management"
   ],
   "author": "Prescott Prue <sprue.dev@gmail.com>",
   "license": "MIT",
