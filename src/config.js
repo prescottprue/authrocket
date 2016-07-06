@@ -8,9 +8,10 @@ let defaultConfig = {
   apiUrl: process.env.AUTHROCKET_API_URL || 'https://api-e1.authrocket.com/v1/',
   jsUrl: process.env.AUTHROCKET_JS_URL
 }
+
 let envName = 'prod'
-let level = null
 let configInstance = null // Singleton variable
+
 class Config {
   constructor () {
     if (!configInstance) {
@@ -19,31 +20,20 @@ class Config {
     return merge(configInstance, defaultConfig)
   }
 
-  set logLevel (setLevel) {
-    level = setLevel
-  }
-
-  get logLevel () {
-    if (level) {
-      return level
-    }
-    return defaultConfig.envs[envName].logLevel
-  }
-
   set envName (newEnv) {
     envName = newEnv
-    // this.envName = newEnv
-    // console.log('Environment name set:', envName)
   }
 
   get env () {
     return defaultConfig.envs[envName]
   }
+
   applySettings (settingsData) {
     each(keys(settingsData), key => {
       this[key] = settingsData[key]
     })
   }
+
   // Map getters that handle removing trailing slash of urls
   get urls () {
     let jsUrl = this.jsUrl
