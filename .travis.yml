@@ -10,7 +10,7 @@ branches:
 sudo: false
 
 script:
-  - npm run lint:fix
+  # - npm run lint:fix
   - npm run test:cov
 
 addons:
